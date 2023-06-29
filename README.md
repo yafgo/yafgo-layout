@@ -7,6 +7,6 @@
   - [ ] controller
   - [ ] migrations
 - [ ] migrate 命令
-- [ ] play 命令 (开发阶段使用)
+- [x] play 命令 (开发阶段使用)
 - [x] gorm gen 命令 (开发阶段使用)
 - [ ] swag init 命令 (开发阶段使用)
