@@ -36,8 +36,8 @@ func (app *Application) Initialize() *Application {
 
 		// rootCmd 的所有子命令都会执行以下前置代码
 		PersistentPreRun: func(command *cobra.Command, args []string) {
-			// 这里已经可以获取到命令行参数了
-			fmt.Println("cmd PreRun")
+			// [前置执行] 这里已经可以获取到命令行参数了
+			app.preRun()
 		},
 	}
 

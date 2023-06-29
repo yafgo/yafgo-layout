@@ -68,7 +68,7 @@ func SetupConfig(mode string) *viper.Viper {
 		configName = mode
 		// 读取指定 mode 配置
 		conf.SetConfigName(configName)
-		color.Successln("MergeInConfig:", configName+".yaml")
+		color.Successln("MergeInConfig:", _f)
 		if err := conf.MergeInConfig(); err != nil {
 			panic(fmt.Errorf("MergeInConfig Error [%s]: %+v", configName, err))
 		}
@@ -82,7 +82,7 @@ func SetupConfig(mode string) *viper.Viper {
 		configName = mode + ".local"
 		// 读取 local 配置
 		conf.SetConfigName(configName)
-		color.Successln("MergeInConfig:", configName+".yaml")
+		color.Successln("MergeInConfig:", _f)
 		if err := conf.MergeInConfig(); err != nil {
 			panic(fmt.Errorf("MergeInConfig Error [%s]: %+v", configName, err))
 		}
