@@ -10,6 +10,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+// zap 默认配置
 /* [yaml 配置项]
 log:
   log_level: debug
@@ -17,9 +18,18 @@ log:
   log_filename: "./logs/log.log"  # log 文件名
   max_backups: 30                 # 日志文件最多保存多少个备份
   max_age: 7                      # 文件最多保存多少天
-  max_size: 1024                  # 每个日志文件保存的最大尺寸 单位：M
+  max_size: 64                    # 每个日志文件保存的最大尺寸,单位：M
   compress: true                  # 是否压缩
 */
+var zapConfigDefault = map[string]any{
+	"log_level":    "debug",          // log级别: debug < info < warn < error < fatal < panic
+	"encoding":     "console",        // json or console
+	"log_filename": "./logs/log.log", // log 文件名
+	"max_backups":  30,               // 日志文件最多保存多少个备份
+	"max_age":      7,                // 文件最多保存多少天
+	"max_size":     64,               // 每个日志文件保存的最大尺寸,单位：Mb
+	"compress":     true,             // 是否压缩
+}
 
 type logger struct {
 	*zap.Logger
@@ -39,6 +49,8 @@ func SetPrefix(val string) {
 }
 
 func SetupLogger(conf *viper.Viper) *logger {
+	// 初始默认配置
+	conf.SetDefault("log", zapConfigDefault)
 	Logger = initZap(conf)
 	return Logger
 }
@@ -47,7 +59,7 @@ func initZap(conf *viper.Viper) *logger {
 	// 日志级别 DEBUG,ERROR,INFO
 	lv := conf.GetString("log.log_level")
 	var level zapcore.Level
-	//debug < info < warn < error < fatal < panic
+	// debug < info < warn < error < fatal < panic
 	switch lv {
 	case "debug":
 		level = zap.DebugLevel
