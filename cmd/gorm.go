@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"go-toy/toy-layout/internal/gorm_gen"
+	"go-toy/toy-layout/pkg/config"
 
 	"github.com/spf13/cobra"
 )
@@ -31,8 +32,8 @@ func init() {
 func runGormGen(cmd *cobra.Command, args []string) {
 
 	fmt.Println("run gorm_gen...")
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%v)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		"dbUser", "dbPassword", "dbHost", "dbPort", "db")
+	conf := config.Config()
+	dsn := conf.GetString("data.mysql.default")
 	gorm_gen.RunGenerate(dsn)
 
 }

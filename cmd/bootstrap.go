@@ -1,7 +1,10 @@
 package cmd
 
 import (
+	"go-toy/toy-layout/global"
+	"go-toy/toy-layout/internal/query"
 	"go-toy/toy-layout/pkg/config"
+	"go-toy/toy-layout/pkg/database"
 	"go-toy/toy-layout/pkg/logger"
 )
 
@@ -13,6 +16,9 @@ func (app *Application) preRun() {
 
 	// 初始化 logger
 	app.setupLogger()
+
+	// 初始化 gorm
+	app.setupGorm()
 }
 
 // setupConfig 初始化配置
@@ -28,4 +34,18 @@ func (app *Application) setupLogger() {
 	logger.SetIsProd(false)
 	logger.SetPrefix("gotoy")
 	logger.SetupLogger(conf)
+}
+
+// setupGorm 初始化 gorm
+func (app *Application) setupGorm() {
+	conf := config.Config()
+	gormLogger := logger.NewGormLogger()
+	gormDB, err := database.NewGormMysql(conf, gormLogger)
+	if err != nil {
+		panic(err)
+	}
+	// 赋值全局 mysql 对象
+	global.Mysql = gormDB
+	// 设置 query 使用的默认 db 对象
+	query.SetDefault(gormDB)
 }

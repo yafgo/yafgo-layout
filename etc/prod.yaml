@@ -8,3 +8,12 @@ log:
   max_age: 7 # 文件最多保存多少天
   max_size: 64 # 每个日志文件保存的最大尺寸,单位：M
   compress: true # 是否压缩
+
+data:
+  gorm:
+    log_mode: 4 #  1-Silent, 2-Error, 3-Warn, 4-Info
+    table_prefix: "" #
+    max_idle_conns: 2 #
+    max_open_conns: 0 #
+  mysql:
+    default: "root:123456@tcp(127.0.0.1:3307)/user?charset=utf8mb4&parseTime=True&loc=Local"
