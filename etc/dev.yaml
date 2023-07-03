@@ -16,4 +16,8 @@ data:
     max_idle_conns: 2 #
     max_open_conns: 0 #
   mysql:
-    default: "root:123456@tcp(127.0.0.1:3307)/user?charset=utf8mb4&parseTime=True&loc=Local"
+    default: "root:123456@tcp(127.0.0.1:3307)/gotoy?charset=utf8mb4&parseTime=True&loc=Local"
+  migrate:
+    table: "migrations"
+    driver: "mysql"
+    charset: "utf8mb4"

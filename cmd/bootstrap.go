@@ -6,6 +6,7 @@ import (
 	"go-toy/toy-layout/pkg/config"
 	"go-toy/toy-layout/pkg/database"
 	"go-toy/toy-layout/pkg/logger"
+	"go-toy/toy-layout/pkg/migration"
 	"time"
 )
 
@@ -14,6 +15,7 @@ func (app *Application) preRun() {
 	// 初始化配置
 	// 由于大多逻辑都可能用到配置, 所以配置初始化应该首先被执行
 	app.setupConfig()
+	conf := config.Config()
 	app.initTimeZone()
 
 	// 初始化 logger
@@ -21,6 +23,9 @@ func (app *Application) preRun() {
 
 	// 初始化 gorm
 	app.setupGorm()
+
+	// 初始化 migration
+	migration.Setup(conf)
 }
 
 // setupConfig 初始化配置
