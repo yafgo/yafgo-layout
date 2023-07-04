@@ -16,7 +16,7 @@ func NewGinEngine(isProd bool) *gin.Engine {
 	}
 
 	// 初始化 Gin 实例
-	r := gin.Default()
+	r := gin.New()
 
 	// 注册路由
 	registerRoutes(r)
