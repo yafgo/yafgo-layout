@@ -1,4 +1,7 @@
 # [mode]: prod
+env: prod
+http:
+  port: 8080
 
 log:
   log_level: info

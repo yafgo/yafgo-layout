@@ -1,4 +1,7 @@
 # [mode]: dev
+env: dev
+http:
+  port: 8080
 
 log:
   log_level: debug
