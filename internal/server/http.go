@@ -1,6 +1,7 @@
 package server
 
 import (
+	"go-toy/toy-layout/internal/middleware"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -29,9 +30,10 @@ func registerGlobalMiddleware(router *gin.Engine) {
 	router.Use(
 		gin.Logger(),
 		gin.Recovery(),
-		func(ctx *gin.Context) {
+		middleware.CORS(),
+		/* func(ctx *gin.Context) {
 			ctx.Header("Access-Control-Expose-Headers", "custom-header")
-		},
+		}, */
 	)
 }
 
