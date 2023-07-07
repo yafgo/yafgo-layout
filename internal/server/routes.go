@@ -1,6 +1,11 @@
 package server
 
-import "github.com/gin-gonic/gin"
+import (
+	"go-toy/toy-layout/pkg/logger"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+)
 
 func registerRoutes(r *gin.Engine) {
 	// 注册全局中间件
@@ -8,6 +13,7 @@ func registerRoutes(r *gin.Engine) {
 
 	r.GET("", func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{"Hello": "Go Toy"})
+		logger.Logger.WithContext(ctx).Debug("handler", zap.String("hello", "go toy"))
 	})
 
 	// 静态文件

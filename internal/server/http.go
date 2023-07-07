@@ -28,7 +28,7 @@ func NewGinEngine(isProd bool) *gin.Engine {
 // registerGlobalMiddleware 注册全局中间件
 func registerGlobalMiddleware(router *gin.Engine) {
 	router.Use(
-		gin.Logger(),
+		middleware.Logger(),
 		gin.Recovery(),
 		middleware.CORS(),
 		/* func(ctx *gin.Context) {

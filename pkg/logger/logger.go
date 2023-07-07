@@ -4,6 +4,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -158,4 +159,27 @@ func getLogWriter(conf *viper.Viper) zapcore.WriteSyncer {
 		// return zapcore.AddSync(lumberJackLogger)
 		return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(lumberJackLogger))
 	}
+}
+
+const LOGGER_CTX_KEY = "zapLogger"
+
+// NewContext 给指定的context添加字段
+func (l *logger) NewContext(ctx *gin.Context, fields ...zapcore.Field) {
+	ctx.Set(LOGGER_CTX_KEY, l.WithContext(ctx).With(fields...))
+}
+
+// WithContext 从指定的context返回一个 logger 实例
+func (l *logger) WithContext(ctx *gin.Context) *logger {
+	if ctx == nil {
+		return l
+	}
+	zl, exists := ctx.Get(LOGGER_CTX_KEY)
+	if !exists {
+		return l
+	}
+	ctxLogger, ok := zl.(*zap.Logger)
+	if ok {
+		return &logger{ctxLogger}
+	}
+	return l
 }

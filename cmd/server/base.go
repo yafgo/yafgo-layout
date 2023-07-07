@@ -34,7 +34,7 @@ func (s *webService) CmdRun(cmd *cobra.Command, args []string) {
 	// 监听外部终止程序的信号
 	go func() {
 		sig := <-sigs
-		fmt.Printf("%s, waiting...\n", sig)
+		log.Printf("%s, waiting...\n", sig)
 		cancel()
 	}()
 
