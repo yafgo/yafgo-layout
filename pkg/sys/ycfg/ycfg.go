@@ -2,6 +2,7 @@ package ycfg
 
 import (
 	"fmt"
+	"io"
 	"path/filepath"
 
 	"github.com/fsnotify/fsnotify"
@@ -11,12 +12,49 @@ import (
 
 type Config struct {
 	*viper.Viper
+
+	shouldWatch   bool
+	unmarshalObj  any
+	onChangeFuncs []func()
+}
+
+// RegisterOnChangeHandler 注册 onChange 回调处理
+func (p *Config) RegisterOnChangeHandler(fn func()) {
+	p.onChangeFuncs = append(p.onChangeFuncs, fn)
+}
+
+// EmitChange 触发 change 事件
+func (p *Config) EmitChange() {
+	for _, fn := range p.onChangeFuncs {
+		go fn()
+	}
+}
+
+// MergeConfig 从 io.Reader 合并配置, 例如从nacos读到的配置等
+func (p *Config) MergeConfig(in io.Reader) (err error) {
+	if err = p.Viper.MergeConfig(in); err != nil {
+		return
+	}
+	p.EmitChange()
+	return
+}
+
+func (p *Config) doUnmarshal() {
+	if p.unmarshalObj == nil {
+		return
+	}
+	if err := p.Viper.Unmarshal(p.unmarshalObj); err != nil {
+		color.Errorln(err)
+	}
 }
 
 type ycfg struct {
 	envPrefix  string
 	configType string
 	configDir  string
+
+	shouldWatch  bool
+	unmarshalObj any
 
 	configDirs []string
 }
@@ -49,7 +87,7 @@ func New(name string, opts ...ycfgOption) *Config {
 //	默认依次在 "{cwd}/config/"、"{cwd}/" 目录下查找
 func WithDir(val string) ycfgOption {
 	return func(p *ycfg) {
-		if val == "" {
+		if val == "" || val == "." {
 			return
 		}
 		p.configDir = val
@@ -88,8 +126,21 @@ func WithEnvPrefix(val string) ycfgOption {
 	}
 }
 
-func (p *ycfg) Config(name ...string) *Config {
-	return p.setupConfig(name...)
+// WithUnmarshal 解析配置到指定变量
+func WithUnmarshalObj(obj any) ycfgOption {
+	return func(p *ycfg) {
+		if obj == nil {
+			return
+		}
+		p.unmarshalObj = obj
+	}
+}
+
+// WithShouldWatch 是否监听文件变动, 默认否
+func WithShouldWatch(flag bool) ycfgOption {
+	return func(p *ycfg) {
+		p.shouldWatch = flag
+	}
 }
 
 // SetupViper 初始化配置
@@ -98,7 +149,12 @@ func (p *ycfg) Config(name ...string) *Config {
 //	故配置优先级: [mode].local.yaml  >  [mode].yaml
 //	可以自定义任意 mode, 只需要新增 [mode].yaml 文件即可
 func (p *ycfg) setupConfig(name ...string) *Config {
-	var cfg = &Config{}
+	var cfg = &Config{
+		unmarshalObj:  p.unmarshalObj,
+		shouldWatch:   p.shouldWatch,
+		onChangeFuncs: []func(){},
+	}
+	cfg.onChangeFuncs = append(cfg.onChangeFuncs, cfg.doUnmarshal)
 	cfg.Viper = viper.New()
 	var _viper = cfg.Viper
 
@@ -153,11 +209,16 @@ func (p *ycfg) setupConfig(name ...string) *Config {
 
 	if configFileUsed == "" {
 		color.Warnln("没有加载任何配置")
-	} else {
+		return cfg
+	}
+
+	cfg.doUnmarshal()
+	if p.shouldWatch {
 		// 监听配置文件变化
 		_viper.WatchConfig()
 		_viper.OnConfigChange(func(e fsnotify.Event) {
 			color.Infoln("config file changed:", e.Name)
+			cfg.EmitChange()
 		})
 	}
 
