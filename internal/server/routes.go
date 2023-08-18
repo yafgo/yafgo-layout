@@ -1,6 +1,7 @@
 package server
 
 import (
+	"go-toy/toy-layout/global"
 	"go-toy/toy-layout/pkg/logger"
 
 	"github.com/gin-gonic/gin"
@@ -12,8 +13,9 @@ func registerRoutes(r *gin.Engine) {
 	registerGlobalMiddleware(r)
 
 	r.GET("", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{"Hello": "Go Toy"})
-		logger.Logger.WithContext(ctx).Debug("handler", zap.String("hello", "go toy"))
+		appname := global.AppName()
+		ctx.JSON(200, gin.H{"Hello": appname})
+		logger.Logger.WithContext(ctx).Debug("handler", zap.String("hello", appname))
 	})
 
 	// 静态文件

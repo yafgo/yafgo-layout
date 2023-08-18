@@ -3,8 +3,8 @@ package server
 import (
 	"context"
 	"fmt"
+	"go-toy/toy-layout/global"
 	"go-toy/toy-layout/internal/server"
-	"go-toy/toy-layout/pkg/config"
 	"go-toy/toy-layout/pkg/http"
 	"log"
 	"os"
@@ -50,7 +50,7 @@ func (s *webService) CmdRun(cmd *cobra.Command, args []string) {
 
 // RunWebServer 启动 web server
 func (s *webService) RunWebServer(ctx context.Context) {
-	conf := config.Config()
+	conf := global.Ycfg.Viper
 	isProd := conf.GetString("env") == "prod"
 	port := conf.GetInt("http.port")
 	addr := fmt.Sprintf(":%d", port)

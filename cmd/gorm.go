@@ -1,10 +1,10 @@
 package cmd
 
 import (
-	"fmt"
+	"go-toy/toy-layout/global"
 	"go-toy/toy-layout/internal/gorm_gen"
-	"go-toy/toy-layout/pkg/config"
 
+	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 )
 
@@ -31,8 +31,8 @@ func init() {
 
 func runGormGen(cmd *cobra.Command, args []string) {
 
-	fmt.Println("run gorm_gen...")
-	conf := config.Config()
+	color.Successln("Run gorm_gen...")
+	conf := global.Ycfg.Viper
 	dsn := conf.GetString("data.mysql.default")
 	gorm_gen.RunGenerate(dsn)
 

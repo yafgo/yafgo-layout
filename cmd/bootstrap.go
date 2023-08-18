@@ -3,10 +3,10 @@ package cmd
 import (
 	"go-toy/toy-layout/global"
 	"go-toy/toy-layout/internal/query"
-	"go-toy/toy-layout/pkg/config"
 	"go-toy/toy-layout/pkg/database"
 	"go-toy/toy-layout/pkg/logger"
 	"go-toy/toy-layout/pkg/migration"
+	"go-toy/toy-layout/pkg/sys/ycfg"
 	"time"
 )
 
@@ -15,7 +15,6 @@ func (app *Application) preRun() {
 	// 初始化配置
 	// 由于大多逻辑都可能用到配置, 所以配置初始化应该首先被执行
 	app.setupConfig()
-	conf := config.Config()
 	app.initTimeZone()
 
 	// 初始化 logger
@@ -25,27 +24,29 @@ func (app *Application) preRun() {
 	app.setupGorm()
 
 	// 初始化 migration
-	migration.Setup(conf)
+	migration.Setup(global.Ycfg.Viper)
 }
 
 // setupConfig 初始化配置
 func (app *Application) setupConfig() {
-	config.SetConfigDir("etc")
-	config.SetEnvPrefix("GOTOY")
-	config.SetupConfig(app.Mode)
+	global.Ycfg = ycfg.New(app.Mode,
+		ycfg.WithType("yaml"),
+		ycfg.WithEnvPrefix("YAFGO"),
+		// ycfg.WithUnmarshalObj(global.Config),
+	)
 }
 
 // setupLogger 初始化 logger
 func (app *Application) setupLogger() {
-	conf := config.Config()
-	logger.SetIsProd(false)
-	logger.SetPrefix("gotoy")
+	conf := global.Ycfg.Viper
+	logger.SetIsProd(global.IsProd())
+	logger.SetPrefix(global.AppName())
 	logger.SetupLogger(conf)
 }
 
 // setupGorm 初始化 gorm
 func (app *Application) setupGorm() {
-	conf := config.Config()
+	conf := global.Ycfg.Viper
 	gormLogger := logger.NewGormLogger()
 	gormDB, err := database.NewGormMysql(conf, gormLogger)
 	if err != nil {

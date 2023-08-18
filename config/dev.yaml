@@ -1,0 +1,26 @@
+# [mode]: dev
+env: dev
+http:
+  port: 8080
+
+log:
+  log_level: debug
+  encoding: console # json or console
+  log_filename: "./storage/logs/gotoy.log" # log 文件名
+  max_backups: 30 # 日志文件最多保存多少个备份
+  max_age: 7 # 文件最多保存多少天
+  max_size: 64 # 每个日志文件保存的最大尺寸,单位：M
+  compress: true # 是否压缩
+
+data:
+  gorm:
+    log_mode: 4 #  1-Silent, 2-Error, 3-Warn, 4-Info
+    table_prefix: "" #
+    max_idle_conns: 2 #
+    max_open_conns: 0 #
+  mysql:
+    default: "root:123456@tcp(127.0.0.1:3307)/gotoy?charset=utf8mb4&parseTime=True&loc=Local"
+  migrate:
+    table: "migrations"
+    driver: "mysql"
+    charset: "utf8mb4"
