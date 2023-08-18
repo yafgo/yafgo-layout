@@ -40,9 +40,11 @@ func (app *Application) setupConfig() {
 
 // setupLogger 初始化 logger
 func (app *Application) setupLogger(cfg *viper.Viper) {
-	logger.SetIsProd(global.IsProd())
-	logger.SetPrefix(global.AppName())
-	logger.SetupLogger(cfg)
+	logger.SetupDefault(
+		cfg,
+		logger.WithIsProd(global.IsProd()),
+		logger.WithPrefix(global.AppName()),
+	)
 }
 
 // setupGorm 初始化 gorm

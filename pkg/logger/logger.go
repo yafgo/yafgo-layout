@@ -32,31 +32,51 @@ var zapConfigDefault = map[string]any{
 	"compress":     true,             // 是否压缩
 }
 
-type logger struct {
-	*zap.Logger
-}
-
 var Logger *logger // 全局 Logger 对象
 
-var isProd = false // 是否生产模式
-var logPrefix = "" // log 前缀
-
-func SetIsProd(val bool) {
-	isProd = val
-}
-
-func SetPrefix(val string) {
-	logPrefix = val
-}
-
-func SetupLogger(conf *viper.Viper) *logger {
-	// 初始默认配置
-	conf.SetDefault("log", zapConfigDefault)
-	Logger = initZap(conf)
+func SetupDefault(conf *viper.Viper, opts ...loggerOption) *logger {
+	Logger = New(conf, opts...)
 	return Logger
 }
 
-func initZap(conf *viper.Viper) *logger {
+type logger struct {
+	*zap.Logger
+
+	isProd bool         // 是否生产模式
+	prefix string       // log 前缀
+	cfg    *viper.Viper // 配置对象
+}
+
+type loggerOption func(*logger)
+
+// New 获取新的logger实例
+func New(conf *viper.Viper, opts ...loggerOption) *logger {
+	// 初始默认配置
+	conf.SetDefault("log", zapConfigDefault)
+	Logger = initZap(conf, opts...)
+	return Logger
+}
+
+// WithIsProd 是否生成模式
+func WithIsProd(isProd bool) loggerOption {
+	return func(p *logger) {
+		p.isProd = isProd
+	}
+}
+
+// WithPrefix 设置log前缀
+func WithPrefix(prefix string) loggerOption {
+	return func(p *logger) {
+		p.prefix = prefix
+	}
+}
+
+func initZap(conf *viper.Viper, opts ...loggerOption) *logger {
+	lg := &logger{cfg: conf}
+	for _, opt := range opts {
+		opt(lg)
+	}
+
 	// 日志级别 DEBUG,ERROR,INFO
 	lv := conf.GetString("log.log_level")
 	var level zapcore.Level
@@ -75,9 +95,8 @@ func initZap(conf *viper.Viper) *logger {
 	}
 
 	// 初始化 core
-	isConsole := conf.GetString("log.encoding") == "console"
-	encoder := getEncoder(isConsole)
-	writeSyncer := getLogWriter(conf)
+	encoder := lg.getEncoder(lg.isConsole())
+	writeSyncer := lg.getLogWriter()
 	core := zapcore.NewCore(encoder, writeSyncer, level)
 
 	// 初始化 Logger
@@ -87,16 +106,16 @@ func initZap(conf *viper.Viper) *logger {
 		zap.AddCallerSkip(1),              // 封装了一层，调用文件去除一层(runtime.Caller(1))
 		zap.AddStacktrace(zap.ErrorLevel), // Error 时才会显示 stacktrace
 	}
-	if isProd {
+	if !lg.isProd {
 		zapOpts = append(zapOpts, zap.Development())
 	}
 	zapLogger = zap.New(core, zapOpts...)
 	zap.ReplaceGlobals(zapLogger)
-	return &logger{zapLogger}
+	return &logger{Logger: zapLogger}
 }
 
 // getEncoder 设置日志存储格式
-func getEncoder(isConsole bool) zapcore.Encoder {
+func (lg *logger) getEncoder(isConsole bool) zapcore.Encoder {
 	// 日志格式规则
 	encoderConfig := zapcore.EncoderConfig{
 		TimeKey:        "ts",
@@ -108,7 +127,7 @@ func getEncoder(isConsole bool) zapcore.Encoder {
 		StacktraceKey:  "stacktrace",
 		LineEnding:     zapcore.DefaultLineEnding,      // 每行日志的结尾添加 "\n"
 		EncodeLevel:    zapcore.CapitalLevelEncoder,    // 日志级别名称大写，如 ERROR、INFO
-		EncodeTime:     timeEncoder,                    // 时间格式
+		EncodeTime:     lg.timeEncoder,                 // 时间格式
 		EncodeDuration: zapcore.SecondsDurationEncoder, // 执行时间，以秒为单位
 		EncodeCaller:   zapcore.ShortCallerEncoder,     // Caller 短格式，如：types/converter.go:17，长格式为绝对路径
 	}
@@ -126,16 +145,21 @@ func getEncoder(isConsole bool) zapcore.Encoder {
 }
 
 // timeEncoder 自定义时间格式
-func timeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-	prefix := logPrefix
+func (lg *logger) timeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
+	prefix := lg.prefix
 	if prefix != "" {
 		prefix = "[" + prefix + "]"
 	}
-	enc.AppendString(prefix + t.Format(time.DateTime+".000000"))
+	if lg.isConsole() {
+		enc.AppendString(prefix + t.Format(time.DateTime+".000000"))
+	} else {
+		enc.AppendString(t.Format(time.DateTime + ".000000"))
+	}
 }
 
 // getLogWriter 日志记录介质
-func getLogWriter(conf *viper.Viper) zapcore.WriteSyncer {
+func (lg *logger) getLogWriter() zapcore.WriteSyncer {
+	conf := lg.cfg
 
 	// 日志文件
 	filename := conf.GetString("log.log_filename")
@@ -150,8 +174,7 @@ func getLogWriter(conf *viper.Viper) zapcore.WriteSyncer {
 	}
 
 	// 配置输出介质
-	isConsole := conf.GetString("log.encoding") == "console"
-	if isConsole {
+	if lg.isConsole() {
 		// 本地开发: 终端打印和记录文件
 		return zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout), zapcore.AddSync(lumberJackLogger))
 	} else {
@@ -161,25 +184,35 @@ func getLogWriter(conf *viper.Viper) zapcore.WriteSyncer {
 	}
 }
 
+// isConsole 是否控制台输出
+func (lg *logger) isConsole() bool {
+	return lg.cfg.GetString("log.encoding") == "console"
+}
+
 const LOGGER_CTX_KEY = "zapLogger"
 
 // NewContext 给指定的context添加字段
-func (l *logger) NewContext(ctx *gin.Context, fields ...zapcore.Field) {
-	ctx.Set(LOGGER_CTX_KEY, l.WithContext(ctx).With(fields...))
+func (lg *logger) NewContext(ctx *gin.Context, fields ...zapcore.Field) {
+	ctx.Set(LOGGER_CTX_KEY, lg.WithContext(ctx).With(fields...))
 }
 
 // WithContext 从指定的context返回一个 logger 实例
-func (l *logger) WithContext(ctx *gin.Context) *logger {
+func (lg *logger) WithContext(ctx *gin.Context) *logger {
 	if ctx == nil {
-		return l
+		return lg
 	}
 	zl, exists := ctx.Get(LOGGER_CTX_KEY)
 	if !exists {
-		return l
+		return lg
 	}
 	ctxLogger, ok := zl.(*zap.Logger)
 	if ok {
-		return &logger{ctxLogger}
+		return &logger{
+			Logger: ctxLogger,
+			isProd: lg.isProd,
+			prefix: lg.prefix,
+			cfg:    lg.cfg,
+		}
 	}
-	return l
+	return lg
 }

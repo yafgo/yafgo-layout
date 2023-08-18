@@ -1,5 +1,6 @@
 # [mode]: dev
 env: dev
+appname: yafgo
 http:
   port: 8080
 
