@@ -8,6 +8,8 @@ import (
 	"go-toy/toy-layout/pkg/migration"
 	"go-toy/toy-layout/pkg/sys/ycfg"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
 // preRun 前置操作
@@ -18,10 +20,10 @@ func (app *Application) preRun() {
 	app.initTimeZone()
 
 	// 初始化 logger
-	app.setupLogger()
+	app.setupLogger(global.Ycfg.Viper)
 
 	// 初始化 gorm
-	app.setupGorm()
+	app.setupGorm(global.Ycfg.Viper)
 
 	// 初始化 migration
 	migration.Setup(global.Ycfg.Viper)
@@ -37,18 +39,16 @@ func (app *Application) setupConfig() {
 }
 
 // setupLogger 初始化 logger
-func (app *Application) setupLogger() {
-	conf := global.Ycfg.Viper
+func (app *Application) setupLogger(cfg *viper.Viper) {
 	logger.SetIsProd(global.IsProd())
 	logger.SetPrefix(global.AppName())
-	logger.SetupLogger(conf)
+	logger.SetupLogger(cfg)
 }
 
 // setupGorm 初始化 gorm
-func (app *Application) setupGorm() {
-	conf := global.Ycfg.Viper
+func (app *Application) setupGorm(cfg *viper.Viper) {
 	gormLogger := logger.NewGormLogger()
-	gormDB, err := database.NewGormMysql(conf, gormLogger)
+	gormDB, err := database.NewGormMysql(cfg, gormLogger)
 	if err != nil {
 		panic(err)
 	}
