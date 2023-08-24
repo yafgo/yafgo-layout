@@ -9,62 +9,73 @@ import (
 
 // Debug implements ILogger.
 func Debug(ctx context.Context, v ...any) {
-	defaultLogger.Debug(ctx, v...)
+	_ylog().Debug(ctx, v...)
 }
 
 // Debugf implements ILogger.
 func Debugf(ctx context.Context, format string, v ...any) {
-	defaultLogger.Debugf(ctx, format, v...)
+	_ylog().Debugf(ctx, format, v...)
 }
 
 // Info implements ILogger.
 func Info(ctx context.Context, v ...any) {
-	defaultLogger.Info(ctx, v...)
+	_ylog().Info(ctx, v...)
 }
 
 // Infof implements ILogger.
 func Infof(ctx context.Context, format string, v ...any) {
-	defaultLogger.Infof(ctx, format, v...)
+	_ylog().Infof(ctx, format, v...)
 }
 
 // Warn implements ILogger.
 func Warn(ctx context.Context, v ...any) {
-	defaultLogger.Warn(ctx, v...)
+	_ylog().Warn(ctx, v...)
 }
 
 // Warnf implements ILogger.
 func Warnf(ctx context.Context, format string, v ...any) {
-	defaultLogger.Warnf(ctx, format, v...)
+	_ylog().Warnf(ctx, format, v...)
 }
 
 // Error implements ILogger.
 func Error(ctx context.Context, v ...any) {
-	defaultLogger.Error(ctx, v...)
+	_ylog().Error(ctx, v...)
 }
 
 // Errorf implements ILogger.
 func Errorf(ctx context.Context, format string, v ...any) {
-	defaultLogger.Errorf(ctx, format, v...)
+	_ylog().Errorf(ctx, format, v...)
 }
 
 // Panic implements ILogger.
 func Panic(ctx context.Context, v ...any) {
-	defaultLogger.Panic(ctx, v...)
+	_ylog().Panic(ctx, v...)
 }
 
 // Panicf implements ILogger.
 func Panicf(ctx context.Context, format string, v ...any) {
-	defaultLogger.Panicf(ctx, format, v...)
+	_ylog().Panicf(ctx, format, v...)
 }
 
 // Fatal implements ILogger.
 func Fatal(ctx context.Context, v ...any) {
-	defaultLogger.Fatal(ctx, v...)
+	_ylog().Fatal(ctx, v...)
 }
 
 // Fatalf implements ILogger.
 func Fatalf(ctx context.Context, format string, v ...any) {
-	defaultLogger.Fatalf(ctx, format, v...)
+	_ylog().Fatalf(ctx, format, v...)
+}
+
+func _ylog() *Logger {
+	_lg := &Logger{
+		zl: defaultLogger.zl.WithOptions(
+			// 当前文件封装了一层, 所以重置下skip, 否则打印的行号始终是当前文件的, 而非真正调用的位置
+			zap.AddCallerSkip(1),
+		),
+		config: defaultLogger.config,
+	}
+	return _lg
 }
 
 // With creates a child logger and adds structured context to it. Fields added
