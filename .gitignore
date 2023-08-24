@@ -71,6 +71,7 @@ Thumbs.db
 out/
 .vscode/*
 !.vscode/extensions.json
+!.vscode/launch.json
 *.sublime*
 __debug_bin
 .project
