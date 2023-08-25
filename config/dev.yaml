@@ -9,7 +9,7 @@ log:
   path: "./storage/logs" # log 文件目录
   filename: "yafgo.log" # log 文件名
   prefix: "yafgo" # log 文件名
-  time_format: "2006-01-02 15:04:05" # 时间格式
+  time_format: "2006-01-02 15:04:05.000000" # 时间格式
   stdout: true # 是否输出到 stdout
   ctx_keys: ["req_id"]
   rotate:

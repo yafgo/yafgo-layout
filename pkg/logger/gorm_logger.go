@@ -41,7 +41,7 @@ func (l GormLogger) LogMode(level gormlogger.LogLevel) gormlogger.Interface {
 
 // Info 实现 gormlogger.Interface 的 Info 方法
 func (l GormLogger) Info(ctx context.Context, str string, args ...interface{}) {
-	l.logger().Debugf(ctx, str, args...)
+	l.logger().Infof(ctx, str, args...)
 }
 
 // Warn 实现 gormlogger.Interface 的 Warn 方法
@@ -76,7 +76,7 @@ func (l GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (strin
 			lg.Warn(ctx, "Database ErrRecordNotFound")
 		} else {
 			// 其他错误使用 error 等级
-			lg.Error(ctx, "Database Error: %+v", err)
+			lg.Error(ctx, err)
 		}
 	}
 
@@ -85,22 +85,21 @@ func (l GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (strin
 		lg.Warn(ctx, "Database Slow Log")
 	} else {
 		// 记录所有 SQL 请求
-		lg.Debug(ctx, "Database Query")
+		lg.Info(ctx, "Database Query")
 	}
 
 }
 
 // logger 内用的辅助方法，确保 Zap 内置信息 Caller 的准确性（如 paginator/paginator.go:148）
-func (l GormLogger) logger() *ylog.Logger {
+func (l GormLogger) logger() ylog.ILogger {
 
 	// 跳过 gorm 内置的调用
 	var (
-		gormPackage    = filepath.Join("gorm.io", "gorm")
-		zapgormPackage = filepath.Join("moul.io", "zapgorm2")
+		gormPackage = filepath.Join("gorm.io", "gorm")
 	)
 
 	// 减去一次封装，以及一次在 logger 初始化里添加 zap.AddCallerSkip(1)
-	clone := l.Logger
+	clone := l.Logger.WithCallerSkip(1)
 
 	for i := 2; i < 15; i++ {
 		_, file, _, ok := runtime.Caller(i)
@@ -108,12 +107,11 @@ func (l GormLogger) logger() *ylog.Logger {
 		case !ok:
 		case strings.HasSuffix(file, "_test.go"):
 		case strings.Contains(file, gormPackage):
-		case strings.Contains(file, zapgormPackage):
 		default:
 			// 返回一个附带跳过行号的新的 zap logger
-			// return clone.WithOptions(zap.AddCallerSkip(i))
-			return clone
+			return clone.WithCallerSkip(i)
 		}
 	}
-	return l.Logger
+
+	return clone
 }

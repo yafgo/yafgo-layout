@@ -69,7 +69,7 @@ func (l *Logger) Fatalf(ctx context.Context, format string, v ...any) {
 
 // With creates a child logger and adds structured context to it. Fields added
 // to the child don't affect the parent, and vice versa.
-func (l *Logger) With(fields map[string]any) *Logger {
+func (l *Logger) With(fields map[string]any) ILogger {
 	var zapFields []zapcore.Field
 	if len(fields) > 0 {
 		zapFields = make([]zapcore.Field, 0, len(fields))
@@ -79,6 +79,15 @@ func (l *Logger) With(fields map[string]any) *Logger {
 	}
 	_l := &Logger{
 		zl:     l.zl.With(zapFields...),
+		config: l.config,
+	}
+	return _l
+}
+
+// WithCallerSkip creates a child logger
+func (l *Logger) WithCallerSkip(skip int) ILogger {
+	_l := &Logger{
+		zl:     l.zl.WithOptions(zap.AddCallerSkip(skip)),
 		config: l.config,
 	}
 	return _l

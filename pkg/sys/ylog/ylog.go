@@ -16,6 +16,9 @@ type ILogger interface {
 	Panicf(ctx context.Context, format string, v ...any)
 	Fatal(ctx context.Context, v ...any)
 	Fatalf(ctx context.Context, format string, v ...any)
+
+	With(fields map[string]any) ILogger
+	WithCallerSkip(skip int) ILogger
 }
 
 var (

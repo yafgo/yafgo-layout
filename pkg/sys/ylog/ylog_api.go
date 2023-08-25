@@ -67,7 +67,7 @@ func Fatalf(ctx context.Context, format string, v ...any) {
 	_ylog().Fatalf(ctx, format, v...)
 }
 
-func _ylog() *Logger {
+func _ylog() ILogger {
 	_lg := &Logger{
 		zl: defaultLogger.zl.WithOptions(
 			// 当前文件封装了一层, 所以重置下skip, 否则打印的行号始终是当前文件的, 而非真正调用的位置
@@ -80,7 +80,7 @@ func _ylog() *Logger {
 
 // With creates a child logger and adds structured context to it. Fields added
 // to the child don't affect the parent, and vice versa.
-func With(fields map[string]any) *Logger {
+func With(fields map[string]any) ILogger {
 	var zapFields []zapcore.Field
 	if len(fields) > 0 {
 		zapFields = make([]zapcore.Field, 0, len(fields))
@@ -93,4 +93,9 @@ func With(fields map[string]any) *Logger {
 		config: defaultLogger.config,
 	}
 	return _l
+}
+
+// WithCallerSkip creates a child logger
+func WithCallerSkip(skip int) ILogger {
+	return defaultLogger.WithCallerSkip(skip)
 }
