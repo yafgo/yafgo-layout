@@ -69,7 +69,7 @@ func (lg *Logger) getEncoder(isConsole bool) zapcore.Encoder {
 	}
 
 	// JSON 编码器
-	if lg.config.LogType == LogTypeJson {
+	if lg.config.Encoding == LogTypeJson {
 		return zapcore.NewJSONEncoder(encoderConfig)
 	}
 
@@ -91,7 +91,7 @@ func (lg *Logger) timeEncoder(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 	if timeFormat == "" {
 		timeFormat = time.DateTime
 	}
-	if lg.config.LogType == LogTypeConsole {
+	if lg.config.Encoding == LogTypeConsole {
 		enc.AppendString(prefix + t.Format(timeFormat))
 	} else {
 		enc.AppendString(t.Format(timeFormat))

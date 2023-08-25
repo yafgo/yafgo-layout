@@ -1,8 +1,9 @@
 package database
 
 import (
+	"go-toy/toy-layout/pkg/sys/ycfg"
+
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -31,7 +32,7 @@ var gormConfigDefault = map[string]any{
 }
 
 // NewGormMysql init gorm mysql
-func NewGormMysql(conf *viper.Viper, lg logger.Interface, source ...string) (*gorm.DB, error) {
+func NewGormMysql(conf *ycfg.Config, lg logger.Interface, source ...string) (*gorm.DB, error) {
 	// 初始默认配置
 	conf.SetDefault(gormConfigKey, gormConfigDefault)
 

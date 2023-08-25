@@ -10,7 +10,7 @@ const (
 // Config is the configuration object for logger.
 type Config struct {
 	TimeFormat string       `json:"timeFormat" yaml:"time_format"` // Logging time format.
-	LogType    string       `json:"logType" yaml:"log_type"`       // Logging type: console, json.
+	Encoding   string       `json:"encoding" yaml:"encoding"`      // Logging type: console, json.
 	Path       string       `json:"path" yaml:"path"`              // Logging directory path.
 	Filename   string       `json:"filename" yaml:"filename"`      // Filename is the file to write logs to.
 	Level      string       `json:"level" yaml:"level"`            // Output level.
@@ -21,18 +21,18 @@ type Config struct {
 }
 
 type ConfigRotate struct {
-	MaxSize    int  `json:"maxsize" yaml:"maxsize"`       // MaxSize is the maximum size in megabytes of the log file before it gets rotated. It defaults to 100 megabytes.
-	MaxAge     int  `json:"maxage" yaml:"maxage"`         // MaxAge is the maximum number of days to retain old log files based on the timestamp encoded in their filename.
-	MaxBackups int  `json:"maxbackups" yaml:"maxbackups"` // MaxBackups is the maximum number of old log files to retain.
-	LocalTime  bool `json:"localtime" yaml:"localtime"`   //
-	Compress   bool `json:"compress" yaml:"compress"`     // Compress determines if the rotated log files should be compressed using gzip. The default is not to perform compression.
+	MaxSize    int  `json:"maxSize" yaml:"max_size"`       // MaxSize is the maximum size in megabytes of the log file before it gets rotated. It defaults to 100 megabytes.
+	MaxAge     int  `json:"maxAge" yaml:"max_age"`         // MaxAge is the maximum number of days to retain old log files based on the timestamp encoded in their filename.
+	MaxBackups int  `json:"maxBackups" yaml:"max_backups"` // MaxBackups is the maximum number of old log files to retain.
+	LocalTime  bool `json:"localTime" yaml:"local_time"`   //
+	Compress   bool `json:"compress" yaml:"compress"`      // Compress determines if the rotated log files should be compressed using gzip. The default is not to perform compression.
 }
 
 // DefaultConfig returns the default configuration for logger.
 func DefaultConfig() Config {
 	c := Config{
 		TimeFormat: time.DateTime + ".000000",
-		LogType:    LogTypeConsole,
+		Encoding:   LogTypeConsole,
 		Path:       "./storage/logs",
 		Filename:   "log.log",
 		Level:      "debug",

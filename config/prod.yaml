@@ -4,13 +4,20 @@ http:
   port: 8080
 
 log:
-  log_level: info
+  level: info
   encoding: json # json or console
-  log_filename: "./storage/logs/gotoy.log" # log 文件名
-  max_backups: 30 # 日志文件最多保存多少个备份
-  max_age: 7 # 文件最多保存多少天
-  max_size: 64 # 每个日志文件保存的最大尺寸,单位：M
-  compress: true # 是否压缩
+  path: "./storage/logs" # log 文件目录
+  filename: "yafgo.log" # log 文件名
+  prefix: "" # log 文件名
+  time_format: "2006-01-02 15:04:05" # 时间格式
+  stdout: false # 是否输出到 stdout
+  ctx_keys: ["req_id"]
+  rotate:
+    max_size: 64 # 每个日志文件保存的最大尺寸,单位：M
+    max_age: 7 # 文件最多保存多少天
+    max_backups: 30 # 日志文件最多保存多少个备份
+    local_time: true # 日志文件名使用本地化时间
+    compress: true # 是否压缩
 
 data:
   gorm:
