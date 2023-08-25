@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"go-toy/toy-layout/global"
+	"go-toy/toy-layout/internal/global"
 	"go-toy/toy-layout/internal/gorm_gen"
 
 	"github.com/gookit/color"

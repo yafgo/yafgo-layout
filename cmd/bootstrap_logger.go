@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"go-toy/toy-layout/global"
+	"go-toy/toy-layout/internal/global"
 	"go-toy/toy-layout/pkg/sys/ycfg"
 	"go-toy/toy-layout/pkg/sys/ylog"
 )

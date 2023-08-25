@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"go-toy/toy-layout/global"
+	"go-toy/toy-layout/internal/global"
 	"go-toy/toy-layout/internal/query"
 	"go-toy/toy-layout/pkg/database"
 	"go-toy/toy-layout/pkg/logger"

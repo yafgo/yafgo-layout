@@ -3,7 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
-	"go-toy/toy-layout/global"
+	"go-toy/toy-layout/internal/global"
 	"go-toy/toy-layout/internal/server"
 	"go-toy/toy-layout/pkg/http"
 	"log"

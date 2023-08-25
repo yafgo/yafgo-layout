@@ -5,8 +5,6 @@ import (
 	"log"
 	"net/http"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 type httpServer struct {
@@ -25,16 +23,16 @@ func (hs *httpServer) SetAddr(addr string) *httpServer {
 	return hs
 }
 
-func (hs *httpServer) Run(ctx context.Context, r *gin.Engine) {
-	go hs.run(ctx, r)
+func (hs *httpServer) Run(ctx context.Context, hdl http.Handler) {
+	go hs.run(ctx, hdl)
 }
 
-func (hs *httpServer) run(ctx context.Context, r *gin.Engine) {
+func (hs *httpServer) run(ctx context.Context, hdl http.Handler) {
 
 	// httpServer
 	srv := &http.Server{
 		Addr:    hs.addr,
-		Handler: r,
+		Handler: hdl,
 	}
 
 	// 在 goroutine 中启动 httpServer

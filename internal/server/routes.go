@@ -1,11 +1,9 @@
 package server
 
 import (
-	"go-toy/toy-layout/global"
-	"go-toy/toy-layout/pkg/logger"
+	"go-toy/toy-layout/internal/global"
 
 	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 )
 
 func registerRoutes(r *gin.Engine) {
@@ -15,7 +13,6 @@ func registerRoutes(r *gin.Engine) {
 	r.GET("", func(ctx *gin.Context) {
 		appname := global.AppName()
 		ctx.JSON(200, gin.H{"Hello": appname})
-		logger.Logger.WithContext(ctx).Debug("handler", zap.String("hello", appname))
 	})
 
 	// 静态文件
