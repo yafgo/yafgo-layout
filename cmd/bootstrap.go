@@ -7,6 +7,7 @@ import (
 	"go-toy/toy-layout/pkg/logger"
 	"go-toy/toy-layout/pkg/migration"
 	"go-toy/toy-layout/pkg/sys/ycfg"
+	"go-toy/toy-layout/pkg/sys/ylog"
 	"time"
 
 	"github.com/spf13/viper"
@@ -40,16 +41,25 @@ func (app *Application) setupConfig() {
 
 // setupLogger 初始化 logger
 func (app *Application) setupLogger(cfg *viper.Viper) {
-	logger.SetupDefault(
-		cfg,
-		logger.WithIsProd(global.IsProd()),
-		logger.WithPrefix(global.AppName()),
-	)
+	lgCfg := ylog.DefaultConfig()
+	lgCfg.CtxKeys = []string{"req_id"}
+	lgCfg.Prefix = global.AppName()
+	// lgCfg.LogType = ylog.LogTypeJson
+	// lgCfg.Stdout = true
+	lgCfg.Rotate = ylog.ConfigRotate{
+		MaxSize:    4,
+		MaxAge:     7,
+		MaxBackups: 0,
+		LocalTime:  true,
+		Compress:   false,
+	}
+	lg := ylog.New(lgCfg)
+	ylog.SetDefaultLogger(lg)
 }
 
 // setupGorm 初始化 gorm
 func (app *Application) setupGorm(cfg *viper.Viper) {
-	gormLogger := logger.NewGormLogger()
+	gormLogger := logger.NewGormLogger(ylog.DefaultLogger())
 	gormDB, err := database.NewGormMysql(cfg, gormLogger)
 	if err != nil {
 		panic(err)
