@@ -95,18 +95,20 @@ func (l GormLogger) logger() ylog.ILogger {
 
 	// 跳过 gorm 内置的调用
 	var (
-		gormPackage = filepath.Join("gorm.io", "gorm")
+		pkgGorm    = filepath.Join("gorm.io", "gorm")
+		pkgGormGen = filepath.Join("gorm.io", "gen")
 	)
 
-	// 减去一次封装，以及一次在 logger 初始化里添加 zap.AddCallerSkip(1)
-	clone := l.Logger.WithCallerSkip(1)
+	// 减去一次封装
+	clone := l.Logger.WithCallerSkip(-1)
 
-	for i := 2; i < 15; i++ {
+	for i := 2; i < 10; i++ {
 		_, file, _, ok := runtime.Caller(i)
 		switch {
 		case !ok:
 		case strings.HasSuffix(file, "_test.go"):
-		case strings.Contains(file, gormPackage):
+		case strings.Contains(file, pkgGorm):
+		case strings.Contains(file, pkgGormGen):
 		default:
 			// 返回一个附带跳过行号的新的 zap logger
 			return clone.WithCallerSkip(i)
