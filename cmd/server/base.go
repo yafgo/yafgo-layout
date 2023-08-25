@@ -50,9 +50,9 @@ func (s *webService) CmdRun(cmd *cobra.Command, args []string) {
 
 // RunWebServer 启动 web server
 func (s *webService) RunWebServer(ctx context.Context) {
-	conf := global.Ycfg.Viper
-	isProd := conf.GetString("env") == "prod"
-	port := conf.GetInt("http.port")
+	cfg := global.Ycfg
+	isProd := cfg.GetString("env") == "prod"
+	port := cfg.GetInt("http.port")
 	addr := fmt.Sprintf(":%d", port)
 
 	ginR := server.NewGinEngine(isProd)
