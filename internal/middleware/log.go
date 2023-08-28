@@ -37,7 +37,7 @@ func Logger() gin.HandlerFunc {
 			ctx.Request.Body = io.NopCloser(bytes.NewBuffer(reqBody))
 			reqLogFields["req_params"] = string(reqBody)
 		}
-		ylog.With(reqLogFields).Info(ctx, "Request")
+		// ylog.With(reqLogFields).Info(ctx, "Request")
 
 		// 记录耗时
 		t1 := time.Now()
