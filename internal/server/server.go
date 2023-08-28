@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"go-toy/toy-layout/internal/global"
-	"go-toy/toy-layout/internal/server"
 	"go-toy/toy-layout/pkg/http"
 	"log"
 	"os"
@@ -55,7 +54,7 @@ func (s *webService) RunWebServer(ctx context.Context) {
 	port := cfg.GetInt("http.port")
 	addr := fmt.Sprintf(":%d", port)
 
-	ginR := server.NewGinEngine(isProd)
+	ginR := NewGinEngine(isProd)
 	http.NewServerHttp().
 		SetAddr(addr).
 		Run(ctx, ginR)
