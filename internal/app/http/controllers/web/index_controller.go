@@ -1,6 +1,8 @@
 package web
 
 import (
+	"go-toy/toy-layout/internal/global"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,5 +12,5 @@ type IndexController struct {
 
 // Index index
 func (ctrl *IndexController) Index(c *gin.Context) {
-	c.String(200, "Hello")
+	c.String(200, "Hello "+global.AppName())
 }

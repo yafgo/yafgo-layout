@@ -2,6 +2,7 @@ package server
 
 import (
 	"go-toy/toy-layout/internal/app/http/controllers/api"
+	"go-toy/toy-layout/internal/app/http/controllers/web"
 	"go-toy/toy-layout/internal/global"
 
 	"github.com/gin-gonic/gin"
@@ -24,7 +25,7 @@ func registerRoutes(router *gin.Engine) {
 	api.RegisterRoutes(router)
 
 	// web 路由
-	api.RegisterRoutes(router)
+	web.RegisterRoutes(router)
 
 	// 处理 404
 	router.NoRoute(handle404)
