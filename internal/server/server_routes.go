@@ -1,16 +1,17 @@
 package server
 
 import (
+	"go-toy/toy-layout/internal/app/http/controllers/api"
 	"go-toy/toy-layout/internal/global"
 
 	"github.com/gin-gonic/gin"
 )
 
-func registerRoutes(r *gin.Engine) {
+func registerRoutes(router *gin.Engine) {
 	// 注册全局中间件
-	registerGlobalMiddleware(r)
+	registerGlobalMiddleware(router)
 
-	r.GET("", func(ctx *gin.Context) {
+	router.GET("", func(ctx *gin.Context) {
 		appname := global.AppName()
 		ctx.JSON(200, gin.H{"Hello": appname})
 	})
@@ -19,6 +20,12 @@ func registerRoutes(r *gin.Engine) {
 	// r.StaticFile("/favicon.ico", "public/favicon.ico")
 	// r.Static("/static", "public/static/")
 
+	// api 路由
+	api.RegisterRoutes(router)
+
+	// web 路由
+	api.RegisterRoutes(router)
+
 	// 处理 404
-	r.NoRoute(handle404)
+	router.NoRoute(handle404)
 }
