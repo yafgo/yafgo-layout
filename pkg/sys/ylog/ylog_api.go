@@ -88,14 +88,20 @@ func With(fields map[string]any) ILogger {
 			zapFields = append(zapFields, zap.Any(k, v))
 		}
 	}
-	_l := &Logger{
-		zl:     defaultLogger.zl.With(zapFields...),
-		config: defaultLogger.config,
-	}
+	_l := defaultLogger.copy()
+	_l.zl = defaultLogger.zl.With(zapFields...)
 	return _l
 }
 
 // WithCallerSkip creates a child logger
 func WithCallerSkip(skip int) ILogger {
 	return defaultLogger.WithCallerSkip(skip)
+}
+
+func AddCommonField(key string, val any) ILogger {
+	defaultLogger.commonFields = append(defaultLogger.commonFields, Field{
+		Key: key,
+		Val: val,
+	})
+	return defaultLogger
 }

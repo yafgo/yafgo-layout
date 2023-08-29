@@ -19,6 +19,7 @@ type ILogger interface {
 
 	With(fields map[string]any) ILogger
 	WithCallerSkip(skip int) ILogger
+	AddCommonField(key string, val any) ILogger
 }
 
 var (

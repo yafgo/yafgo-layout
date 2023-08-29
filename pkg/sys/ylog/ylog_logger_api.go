@@ -67,6 +67,14 @@ func (l *Logger) Fatalf(ctx context.Context, format string, v ...any) {
 	l.sugaredLogger(ctx).Fatalf(format, v...)
 }
 
+func (l *Logger) copy() *Logger {
+	return &Logger{
+		zl:           l.zl,
+		config:       l.config,
+		commonFields: l.commonFields,
+	}
+}
+
 // With creates a child logger and adds structured context to it. Fields added
 // to the child don't affect the parent, and vice versa.
 func (l *Logger) With(fields map[string]any) ILogger {
@@ -77,10 +85,8 @@ func (l *Logger) With(fields map[string]any) ILogger {
 			zapFields = append(zapFields, zap.Any(k, v))
 		}
 	}
-	_l := &Logger{
-		zl:     l.zl.With(zapFields...),
-		config: l.config,
-	}
+	_l := l.copy()
+	_l.zl = l.zl.With(zapFields...)
 	return _l
 }
 
@@ -93,8 +99,21 @@ func (l *Logger) WithCallerSkip(skip int) ILogger {
 	return _l
 }
 
+func (l *Logger) AddCommonField(key string, val any) ILogger {
+	l.commonFields = append(l.commonFields, Field{
+		Key: key,
+		Val: val,
+	})
+	return l
+}
+
 func (l *Logger) sugaredLogger(ctx context.Context) (zl *zap.SugaredLogger) {
 	zlFields := make([]zapcore.Field, 0)
+	// commonFields
+	for _, field := range l.commonFields {
+		zlFields = append(zlFields, zap.Any(field.Key, field.Val))
+	}
+	// contextKeys
 	for _, ctxKey := range l.config.CtxKeys {
 		if val := ctx.Value(ctxKey); val != nil {
 			zlFields = append(zlFields, zap.Any(ctxKey, val))

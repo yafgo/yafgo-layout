@@ -14,6 +14,13 @@ type Logger struct {
 	zl *zap.Logger
 
 	config Config
+
+	commonFields []Field
+}
+
+type Field struct {
+	Key string
+	Val any
 }
 
 func New(cfg ...Config) *Logger {
@@ -78,7 +85,6 @@ func (lg *Logger) getEncoder(isConsole bool) zapcore.Encoder {
 	encoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	// 内置的 Console 编码器（支持 stacktrace 换行）
 	return zapcore.NewConsoleEncoder(encoderConfig)
-
 }
 
 // timeEncoder 自定义时间格式
