@@ -1,6 +1,8 @@
 # Yafgo Basic Layout
 
-### 功能清单
+> 文档地址: [https://yafgo.pages.dev/](https://yafgo.pages.dev/)
+
+## 功能清单
 
 - [ ] make 命令 (开发阶段使用)
   - [ ] gorm gen config
