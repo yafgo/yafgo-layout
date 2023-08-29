@@ -1,8 +1,8 @@
 package server
 
 import (
-	"go-toy/toy-layout/internal/middleware"
 	"strings"
+	"yafgo/yafgo-layout/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )

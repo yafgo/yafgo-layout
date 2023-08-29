@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"go-toy/toy-layout/internal/server"
+	"yafgo/yafgo-layout/internal/server"
 
 	"github.com/spf13/cobra"
 )

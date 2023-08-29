@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"go-toy/toy-layout/internal/global"
-	"go-toy/toy-layout/internal/gorm_gen"
+	"yafgo/yafgo-layout/internal/global"
+	"yafgo/yafgo-layout/internal/gorm_gen"
 
 	"github.com/gookit/color"
 	"github.com/spf13/cobra"

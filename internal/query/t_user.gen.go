@@ -17,7 +17,7 @@ import (
 
 	"gorm.io/plugin/dbresolver"
 
-	"go-toy/toy-layout/internal/model"
+	"yafgo/yafgo-layout/internal/model"
 )
 
 func newUser(db *gorm.DB, opts ...gen.DOOption) user {

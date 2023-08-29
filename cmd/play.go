@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"go-toy/toy-layout/cmd/play"
+	"yafgo/yafgo-layout/cmd/play"
 )
 
 func init() {

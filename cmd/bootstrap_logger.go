@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"go-toy/toy-layout/internal/global"
-	"go-toy/toy-layout/pkg/sys/ycfg"
-	"go-toy/toy-layout/pkg/sys/ylog"
+	"yafgo/yafgo-layout/internal/global"
+	"yafgo/yafgo-layout/pkg/sys/ycfg"
+	"yafgo/yafgo-layout/pkg/sys/ylog"
 )
 
 // zap 默认配置

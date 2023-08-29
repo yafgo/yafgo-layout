@@ -3,11 +3,11 @@ package logger
 import (
 	"context"
 	"errors"
-	"go-toy/toy-layout/pkg/sys/ylog"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
+	"yafgo/yafgo-layout/pkg/sys/ylog"
 
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"

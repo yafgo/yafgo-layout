@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go-toy/toy-layout/cmd"
+	"yafgo/yafgo-layout/cmd"
 )
 
 func main() {

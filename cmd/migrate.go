@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"go-toy/toy-layout/pkg/migration"
+	"yafgo/yafgo-layout/pkg/migration"
 )
 
 func init() {

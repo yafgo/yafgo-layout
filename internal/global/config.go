@@ -1,7 +1,7 @@
 package global
 
 import (
-	"go-toy/toy-layout/pkg/sys/ycfg"
+	"yafgo/yafgo-layout/pkg/sys/ycfg"
 )
 
 // 全局 Ycfg 对象

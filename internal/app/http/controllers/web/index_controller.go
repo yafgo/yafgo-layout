@@ -1,7 +1,7 @@
 package web
 
 import (
-	"go-toy/toy-layout/internal/global"
+	"yafgo/yafgo-layout/internal/global"
 
 	"github.com/gin-gonic/gin"
 )

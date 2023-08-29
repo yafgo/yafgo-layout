@@ -1,4 +1,4 @@
-module go-toy/toy-layout
+module yafgo/yafgo-layout
 
 go 1.20
 

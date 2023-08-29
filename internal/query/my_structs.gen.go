@@ -17,7 +17,7 @@ import (
 
 	"gorm.io/plugin/dbresolver"
 
-	"go-toy/toy-layout/internal/gorm_gen"
+	"yafgo/yafgo-layout/internal/gorm_gen"
 )
 
 func newMyStruct(db *gorm.DB, opts ...gen.DOOption) myStruct {

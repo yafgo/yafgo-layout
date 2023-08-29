@@ -3,13 +3,13 @@ package server
 import (
 	"context"
 	"fmt"
-	"go-toy/toy-layout/internal/global"
-	"go-toy/toy-layout/pkg/http"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+	"yafgo/yafgo-layout/internal/global"
+	"yafgo/yafgo-layout/pkg/http"
 
 	"github.com/spf13/cobra"
 )

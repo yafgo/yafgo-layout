@@ -1,14 +1,14 @@
 package cmd
 
 import (
-	"go-toy/toy-layout/internal/global"
-	"go-toy/toy-layout/internal/query"
-	"go-toy/toy-layout/pkg/database"
-	"go-toy/toy-layout/pkg/logger"
-	"go-toy/toy-layout/pkg/migration"
-	"go-toy/toy-layout/pkg/sys/ycfg"
-	"go-toy/toy-layout/pkg/sys/ylog"
 	"time"
+	"yafgo/yafgo-layout/internal/global"
+	"yafgo/yafgo-layout/internal/query"
+	"yafgo/yafgo-layout/pkg/database"
+	"yafgo/yafgo-layout/pkg/logger"
+	"yafgo/yafgo-layout/pkg/migration"
+	"yafgo/yafgo-layout/pkg/sys/ycfg"
+	"yafgo/yafgo-layout/pkg/sys/ylog"
 )
 
 // preRun 前置操作

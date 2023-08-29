@@ -3,10 +3,10 @@ package middleware
 import (
 	"bytes"
 	"fmt"
-	"go-toy/toy-layout/pkg/hash"
-	"go-toy/toy-layout/pkg/sys/ylog"
 	"io"
 	"time"
+	"yafgo/yafgo-layout/pkg/hash"
+	"yafgo/yafgo-layout/pkg/sys/ylog"
 
 	"github.com/gin-gonic/gin"
 )

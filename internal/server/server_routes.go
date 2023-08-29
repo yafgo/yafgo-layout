@@ -1,9 +1,9 @@
 package server
 
 import (
-	"go-toy/toy-layout/internal/app/http/controllers/api"
-	"go-toy/toy-layout/internal/app/http/controllers/web"
-	"go-toy/toy-layout/internal/global"
+	"yafgo/yafgo-layout/internal/app/http/controllers/api"
+	"yafgo/yafgo-layout/internal/app/http/controllers/web"
+	"yafgo/yafgo-layout/internal/global"
 
 	"github.com/gin-gonic/gin"
 )

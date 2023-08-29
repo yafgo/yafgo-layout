@@ -1,7 +1,7 @@
 package database
 
 import (
-	"go-toy/toy-layout/pkg/sys/ycfg"
+	"yafgo/yafgo-layout/pkg/sys/ycfg"
 
 	"github.com/pkg/errors"
 	"gorm.io/driver/mysql"
