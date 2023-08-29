@@ -30,8 +30,8 @@ type Application struct {
 // Initialize 初始化
 func (app *Application) Initialize() *Application {
 	app.rootCmd = &cobra.Command{
-		Use:   "toy",
-		Short: "go-toy",
+		Use:   "yafgo",
+		Short: "yafgo",
 		Long:  `You can use "-h" flag to see all subcommands`,
 
 		// rootCmd 的所有子命令都会执行以下前置代码
