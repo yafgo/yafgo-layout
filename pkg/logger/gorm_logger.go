@@ -63,11 +63,11 @@ func (l GormLogger) Trace(ctx context.Context, begin time.Time, fc func() (strin
 	sql, rows := fc()
 
 	// 通用字段
-	lg := l.logger().With(map[string]any{
-		"sql":     sql,
-		"elapsed": elapsed.String(),
-		"rows":    rows,
-	})
+	lg := l.logger().With(
+		ylog.Any("sql", sql),
+		ylog.Any("elapsed", elapsed.String()),
+		ylog.Any("rows", rows),
+	)
 
 	// Gorm 错误
 	if err != nil {

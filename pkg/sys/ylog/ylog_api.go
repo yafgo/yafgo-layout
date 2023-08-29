@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 // Debug implements ILogger.
@@ -68,28 +67,17 @@ func Fatalf(ctx context.Context, format string, v ...any) {
 }
 
 func _ylog() ILogger {
-	_lg := &Logger{
-		zl: defaultLogger.zl.WithOptions(
-			// 当前文件封装了一层, 所以重置下skip, 否则打印的行号始终是当前文件的, 而非真正调用的位置
-			zap.AddCallerSkip(1),
-		),
-		config: defaultLogger.config,
-	}
+	_lg := defaultLogger.copy()
+	_lg.zl = defaultLogger.zl.WithOptions(
+		// 当前文件封装了一层, 所以重置下skip, 否则打印的行号始终是当前文件的, 而非真正调用的位置
+		zap.AddCallerSkip(1),
+	)
 	return _lg
 }
 
-// With creates a child logger and adds structured context to it. Fields added
-// to the child don't affect the parent, and vice versa.
-func With(fields map[string]any) ILogger {
-	var zapFields []zapcore.Field
-	if len(fields) > 0 {
-		zapFields = make([]zapcore.Field, 0, len(fields))
-		for k, v := range fields {
-			zapFields = append(zapFields, zap.Any(k, v))
-		}
-	}
-	_l := defaultLogger.copy()
-	_l.zl = defaultLogger.zl.With(zapFields...)
+// With 创建一个子logger, 添加到该子logger的字段不会影响父级, 反之亦然
+func With(fields ...Field) ILogger {
+	_l := defaultLogger.With(fields...)
 	return _l
 }
 

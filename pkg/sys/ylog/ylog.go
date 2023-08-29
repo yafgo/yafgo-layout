@@ -17,7 +17,7 @@ type ILogger interface {
 	Fatal(ctx context.Context, v ...any)
 	Fatalf(ctx context.Context, format string, v ...any)
 
-	With(fields map[string]any) ILogger
+	With(fields ...Field) ILogger
 	WithCallerSkip(skip int) ILogger
 	AddCommonField(key string, val any) ILogger
 }

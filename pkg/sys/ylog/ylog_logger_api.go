@@ -70,32 +70,17 @@ func (l *Logger) Fatalf(ctx context.Context, format string, v ...any) {
 func (l *Logger) copy() *Logger {
 	return &Logger{
 		zl:           l.zl,
+		parent:       l,
 		config:       l.config,
+		fields:       l.fields,
 		commonFields: l.commonFields,
 	}
 }
 
-// With creates a child logger and adds structured context to it. Fields added
-// to the child don't affect the parent, and vice versa.
-func (l *Logger) With(fields map[string]any) ILogger {
-	var zapFields []zapcore.Field
-	if len(fields) > 0 {
-		zapFields = make([]zapcore.Field, 0, len(fields))
-		for k, v := range fields {
-			zapFields = append(zapFields, zap.Any(k, v))
-		}
-	}
-	_l := l.copy()
-	_l.zl = l.zl.With(zapFields...)
-	return _l
-}
-
 // WithCallerSkip creates a child logger
 func (l *Logger) WithCallerSkip(skip int) ILogger {
-	_l := &Logger{
-		zl:     l.zl.WithOptions(zap.AddCallerSkip(skip)),
-		config: l.config,
-	}
+	_l := l.copy()
+	_l.zl = l.zl.WithOptions(zap.AddCallerSkip(skip))
 	return _l
 }
 
@@ -118,6 +103,10 @@ func (l *Logger) sugaredLogger(ctx context.Context) (zl *zap.SugaredLogger) {
 		if val := ctx.Value(ctxKey); val != nil {
 			zlFields = append(zlFields, zap.Any(ctxKey, val))
 		}
+	}
+	// fields
+	for _, field := range l.fields {
+		zlFields = append(zlFields, zap.Any(field.Key, field.Val))
 	}
 	if len(zlFields) > 0 {
 		zl = l.zl.With(zlFields...).Sugar()

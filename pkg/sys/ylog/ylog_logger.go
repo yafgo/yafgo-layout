@@ -11,16 +11,12 @@ import (
 )
 
 type Logger struct {
-	zl *zap.Logger
-
+	parent *Logger
+	zl     *zap.Logger
 	config Config
 
 	commonFields []Field
-}
-
-type Field struct {
-	Key string
-	Val any
+	fields       []Field
 }
 
 func New(cfg ...Config) *Logger {

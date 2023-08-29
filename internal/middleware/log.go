@@ -21,13 +21,13 @@ func Logger() gin.HandlerFunc {
 
 		// request info
 		headers := ctx.Request.Header.Clone()
-		reqLogFields := map[string]any{
-			"req_method": ctx.Request.Method,
-			"req_url":    ctx.Request.URL.String(),
-			"query":      ctx.Request.URL.RawQuery,
-			"ip":         ctx.ClientIP(),
-			"ua":         ctx.Request.UserAgent(),
-			"header":     headers,
+		reqLogFields := []ylog.Field{
+			ylog.Any("req_method", ctx.Request.Method),
+			ylog.Any("req_url", ctx.Request.URL.String()),
+			ylog.Any("query", ctx.Request.URL.RawQuery),
+			ylog.Any("ip", ctx.ClientIP()),
+			ylog.Any("ua", ctx.Request.UserAgent()),
+			ylog.Any("header", headers),
 		}
 		var reqBody []byte
 		if ctx.Request.Body != nil {
@@ -35,9 +35,9 @@ func Logger() gin.HandlerFunc {
 			reqBody, _ = ctx.GetRawData()
 			// [重要] 读取后，重新赋值 ctx.Request.Body ，以供后续的其他操作
 			ctx.Request.Body = io.NopCloser(bytes.NewBuffer(reqBody))
-			reqLogFields["req_params"] = string(reqBody)
+			reqLogFields = append(reqLogFields, ylog.Any("req_params", string(reqBody)))
 		}
-		// ylog.With(reqLogFields).Info(ctx, "Request")
+		// ylog.With(reqLogFields...).Info(ctx, "Request")
 
 		// 记录耗时
 		t1 := time.Now()
@@ -50,12 +50,14 @@ func Logger() gin.HandlerFunc {
 
 		// 记录响应状态和耗时
 		respStatus := ctx.Writer.Status()
-		reqLogFields["status"] = respStatus
-		reqLogFields["elapse"] = fmt.Sprintf("%v", cost)
-		reqLogFields["errors"] = ctx.Errors.ByType(gin.ErrorTypePrivate).String()
+		reqLogFields = append(reqLogFields,
+			ylog.Any("status", respStatus),
+			ylog.Any("elapse", fmt.Sprintf("%v", cost)),
+			ylog.Any("errors", ctx.Errors.ByType(gin.ErrorTypePrivate).String()),
+		)
 
 		// 记录本次请求log
-		_ylog := ylog.With(reqLogFields)
+		_ylog := ylog.With(reqLogFields...)
 		logMsg := "HTTP Access Log"
 		if respStatus > 400 && respStatus <= 499 {
 			_ylog.Warn(ctx, logMsg)
