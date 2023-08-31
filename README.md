@@ -12,4 +12,4 @@
 - [x] gorm gen 命令 (开发阶段使用)
 - [x] migrate 命令
 - [x] serve 命令
-- [ ] swag init 命令 (开发阶段使用)
+- [x] swag init (开发阶段使用, 通过 `go generate .` 使用)
