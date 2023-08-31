@@ -39,8 +39,8 @@ func (hs *httpServer) run(ctx context.Context, hdlFUnc func() http.Handler) {
 		log.Fatalln(cError("Unable to start server: ") + err.Error())
 	}
 	fmt.Println()
-	log.Println("Http server started listening on: ", cInfo("[", hs.addr, "]"))
-	log.Println("Swagger ui is serving at: ", cInfo("http://127.0.0.1", hs.addr, "/api/docs/index.html"))
+	log.Println("Http server started listening on: ", cDebug("[", hs.addr, "]"))
+	log.Println("Swagger ui is serving at: ", cDebug("http://127.0.0.1", hs.addr, "/api/docs/index.html"))
 	fmt.Println()
 
 	// httpServer
