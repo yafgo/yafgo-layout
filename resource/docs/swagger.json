@@ -1,0 +1,50 @@
+{
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "基于 `Gin` 的 golang 项目模板",
+        "title": "YAFGO API",
+        "contact": {},
+        "license": {
+            "name": "MIT",
+            "url": "https://github.com/yafgo/yafgo/blob/main/LICENSE"
+        },
+        "version": "1.0.0"
+    },
+    "basePath": "/api",
+    "paths": {
+        "/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiToken": []
+                    }
+                ],
+                "description": "Index Demo",
+                "tags": [
+                    "默认"
+                ],
+                "summary": "Index",
+                "responses": {
+                    "200": {
+                        "description": "{\"code\": 200, \"data\": [...]}",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "ApiToken": {
+            "description": "接口请求token, 格式: `Bearer {token}`",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

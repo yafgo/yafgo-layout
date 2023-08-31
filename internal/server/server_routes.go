@@ -4,8 +4,11 @@ import (
 	"yafgo/yafgo-layout/internal/app/http/controllers/api"
 	"yafgo/yafgo-layout/internal/app/http/controllers/web"
 	"yafgo/yafgo-layout/internal/global"
+	"yafgo/yafgo-layout/resource/docs"
 
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginswagger "github.com/swaggo/gin-swagger"
 )
 
 func registerRoutes(router *gin.Engine) {
@@ -18,8 +21,8 @@ func registerRoutes(router *gin.Engine) {
 	})
 
 	// 静态文件
-	// r.StaticFile("/favicon.ico", "public/favicon.ico")
-	// r.Static("/static", "public/static/")
+	router.StaticFile("/favicon.ico", "resource/public/favicon.ico")
+	// router.Static("/static", "public/static/")
 
 	// api 路由
 	api.RegisterRoutes(router)
@@ -27,6 +30,21 @@ func registerRoutes(router *gin.Engine) {
 	// web 路由
 	web.RegisterRoutes(router)
 
+	// swagger
+	handleSwagger(router)
+
 	// 处理 404
 	router.NoRoute(handle404)
+}
+
+// handleSwagger 启用 swagger
+func handleSwagger(router *gin.Engine) {
+	docs.SwaggerInfo.Schemes = []string{"https", "http"}
+	if global.IsDev() {
+		docs.SwaggerInfo.Schemes = []string{"http", "https"}
+	}
+	router.GET("/api/docs/*any", ginswagger.WrapHandler(
+		swaggerfiles.Handler,
+		ginswagger.PersistAuthorization(true),
+	))
 }

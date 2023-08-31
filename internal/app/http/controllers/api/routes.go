@@ -12,6 +12,7 @@ func RegisterRoutes(router *gin.Engine) {
 	ic := new(IndexController)
 	{
 		rApi.GET("", ic.Index)
+		rApi.GET("todo", todo)
 	}
 }
 

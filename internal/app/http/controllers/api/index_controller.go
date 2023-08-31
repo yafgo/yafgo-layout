@@ -7,6 +7,13 @@ type IndexController struct {
 }
 
 // Index index
+//
+//	@Summary		Index
+//	@Description	Index Demo
+//	@Tags			默认
+//	@Success		200	{object}	any	"{"code": 200, "data": [...]}"
+//	@Router			/ [get]
+//	@Security		ApiToken
 func (ctrl *IndexController) Index(c *gin.Context) {
 
 	ctrl.JSON(c, gin.H{
