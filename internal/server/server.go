@@ -4,13 +4,15 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 	"yafgo/yafgo-layout/internal/global"
-	"yafgo/yafgo-layout/pkg/http"
+	httppkg "yafgo/yafgo-layout/pkg/http"
 
+	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +35,7 @@ func (s *webService) CmdRun(cmd *cobra.Command, args []string) {
 	// 监听外部终止程序的信号
 	go func() {
 		sig := <-sigs
-		log.Printf("%s, waiting...\n", sig)
+		log.Printf("%s, waiting...", sig)
 		cancel()
 	}()
 
@@ -42,9 +44,9 @@ func (s *webService) CmdRun(cmd *cobra.Command, args []string) {
 	// 等待退出
 	<-ctx.Done()
 	// 缓冲几秒等待任务结束
-	log.Println("exiting...")
+	log.Println(cDebug("exiting..."))
 	time.Sleep(time.Second * 2)
-	log.Println("exit")
+	log.Println(cInfo("exit"))
 }
 
 // RunWebServer 启动 web server
@@ -54,8 +56,12 @@ func (s *webService) RunWebServer(ctx context.Context) {
 	port := cfg.GetInt("http.port")
 	addr := fmt.Sprintf(":%d", port)
 
-	ginR := NewGinEngine(isProd)
-	http.NewServerHttp().
+	httppkg.NewServerHttp().
 		SetAddr(addr).
-		Run(ctx, ginR)
+		Run(ctx, func() http.Handler {
+			return NewGinEngine(isProd)
+		})
 }
+
+var cDebug = color.Debug.Render
+var cInfo = color.Info.Render
