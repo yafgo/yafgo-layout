@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"net/http"
-	"time"
 	"yafgo/yafgo-layout/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
@@ -36,12 +35,12 @@ func JWTAuth(j *jwt.JWT, abort ...bool) gin.HandlerFunc {
 			}
 		}
 
-		if claims.ExpiresAt-time.Now().Unix() < claims.BufferTime {
-			claims.ExpiresAt = time.Now().Add(jwt.ExpiresIn).Unix()
+		/* if time.Until(claims.ExpiresAt.Time) < time.Duration(claims.BufferTime) {
+			claims.ExpiresAt = j.NewExpiresAt()
 			newToken, _ := j.CreateToken(*claims)
 			c.Header("x-new-token", newToken)
 			c.Header("x-new-expires-at", cast.ToString(claims.ExpiresAt))
-		}
+		} */
 
 		// 将用户信息存入 gin.context 里，后续 auth 包将从这里拿到当前用户数据
 		c.Set("claims", claims)

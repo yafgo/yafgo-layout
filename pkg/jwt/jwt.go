@@ -22,29 +22,18 @@ var (
 )
 
 var (
-	SignKey    []byte        = []byte("signkey")  // 秘钥，用以加密 JWT
-	ExpiresIn  time.Duration = time.Hour * 24 * 7 // Token 过期时间
-	MaxRefresh time.Duration = time.Hour * 24     // 刷新 Token 的最大过期时间
-	Issuer     string        = "yafgo"            // Token 的发行者
+	defaultSignKey    []byte        = []byte("signkey")  // 秘钥，用以加密 JWT
+	defaultExpiresIn  time.Duration = time.Hour * 24 * 7 // Token 过期时间
+	defaultMaxRefresh time.Duration = time.Hour * 24     // 刷新 Token 的最大过期时间
+	defaultIssuer     string        = "yafgo"            // Token 的发行者
 )
-
-// JWT 定义一个jwt对象
-type JWT struct {
-
-	// 秘钥，用以加密 JWT
-	SignKey []byte
-
-	// 刷新 Token 的最大过期时间
-	MaxRefresh time.Duration
-}
 
 // JWTCustomClaims 自定义载荷
 type JWTCustomClaims struct {
 	ID         uint64 `json:"id"`
-	LoginType  uint64 `json:"login_type"`
 	BufferTime int64  `json:"buffer_time"`
 
-	// StandardClaims 结构体实现了 Claims 接口继承了  Valid() 方法
+	// RegisteredClaims 结构体实现了 Claims 接口继承了  Valid() 方法
 	// JWT 规定了7个官方字段，提供使用:
 	// - iss (issuer)：发布者
 	// - sub (subject)：主题
@@ -53,14 +42,70 @@ type JWTCustomClaims struct {
 	// - aud (audience)：观众，相当于接受者
 	// - nbf (Not Before)：生效时间
 	// - jti (JWT ID)：编号
-	jwtpkg.StandardClaims
+	jwtpkg.RegisteredClaims
 }
 
-func NewJWT() *JWT {
-	return &JWT{
-		SignKey:    SignKey,
-		MaxRefresh: MaxRefresh,
+// JWT 定义一个jwt对象
+type JWT struct {
+	// 秘钥，用以加密 JWT
+	signKey []byte
+
+	// Token 过期时间
+	expiresIn time.Duration
+
+	// Token 的发行者
+	issuer string
+
+	// 刷新 Token 的最大过期时间
+	maxRefresh time.Duration
+}
+
+type JwtOption func(*JWT)
+
+// WithSignKey 配置 jwt signkey
+func WithSignKey(val string) JwtOption {
+	return func(p *JWT) {
+		if val == "" {
+			return
+		}
+		p.signKey = []byte(val)
 	}
+}
+
+// WithIssuer 配置issuer
+func WithIssuer(val string) JwtOption {
+	return func(p *JWT) {
+		p.issuer = val
+	}
+}
+
+// WithExpiresIn 配置过期时间
+func WithExpiresIn(val time.Duration) JwtOption {
+	return func(p *JWT) {
+		p.expiresIn = val
+	}
+}
+
+// WithMaxRefresh 配置最大refresh次数
+func WithMaxRefresh(val time.Duration) JwtOption {
+	return func(p *JWT) {
+		p.maxRefresh = val
+	}
+}
+
+func NewJWT(opts ...JwtOption) *JWT {
+	j := &JWT{
+		signKey:    defaultSignKey,
+		expiresIn:  defaultExpiresIn,
+		maxRefresh: defaultMaxRefresh,
+		issuer:     defaultIssuer,
+	}
+
+	for _, opt := range opts {
+		opt(j)
+	}
+
+	return j
 }
 
 // ParserToken 解析 Token，中间件中调用
@@ -120,10 +165,10 @@ func (jwt *JWT) RefreshToken(c *gin.Context) (string, error) {
 	claims := token.Claims.(*JWTCustomClaims)
 
 	// 5. 检查是否过了『最大允许刷新的时间』
-	x := TimenowInTimezone().Add(-jwt.MaxRefresh).Unix()
-	if claims.IssuedAt > x {
+	x := TimenowInTimezone().Add(-jwt.maxRefresh)
+	if claims.IssuedAt.After(x) {
 		// 修改过期时间
-		claims.StandardClaims.ExpiresAt = jwt.expiresAt()
+		claims.RegisteredClaims.ExpiresAt = jwt.NewExpiresAt()
 		return jwt.CreateToken(*claims)
 	}
 
@@ -131,20 +176,20 @@ func (jwt *JWT) RefreshToken(c *gin.Context) (string, error) {
 }
 
 // IssueToken 生成  Token，在登录成功时调用
-func (jwt *JWT) IssueToken(userID uint64, loginType uint64) (token string, claims JWTCustomClaims, err error) {
+func (jwt *JWT) IssueToken(userID uint64) (token string, claims JWTCustomClaims, err error) {
 
 	// 1. 构造用户 claims 信息(负荷)
-	expiresAt := jwt.expiresAt()
+	expiresAt := jwt.NewExpiresAt()
+	issuedAt := jwtpkg.NewNumericDate(TimenowInTimezone())
 	claims = JWTCustomClaims{
 		ID:         userID,
-		LoginType:  loginType,
-		BufferTime: int64(MaxRefresh / time.Second),
+		BufferTime: int64(jwt.maxRefresh / time.Second),
 
-		StandardClaims: jwtpkg.StandardClaims{
-			NotBefore: TimenowInTimezone().Unix(), // 签名生效时间
-			IssuedAt:  TimenowInTimezone().Unix(), // 首次签名时间（后续刷新 Token 不会更新）
-			ExpiresAt: expiresAt,                  // 签名过期时间
-			Issuer:    Issuer,                     // 签名颁发者
+		RegisteredClaims: jwtpkg.RegisteredClaims{
+			NotBefore: issuedAt,   // 签名生效时间
+			IssuedAt:  issuedAt,   // 首次签名时间（后续刷新 Token 不会更新）
+			ExpiresAt: expiresAt,  // 签名过期时间
+			Issuer:    jwt.issuer, // 签名颁发者
 		},
 	}
 
@@ -161,20 +206,20 @@ func (jwt *JWT) IssueToken(userID uint64, loginType uint64) (token string, claim
 func (jwt *JWT) CreateToken(claims JWTCustomClaims) (string, error) {
 	// 使用HS256算法进行token生成
 	token := jwtpkg.NewWithClaims(jwtpkg.SigningMethodHS256, claims)
-	return token.SignedString(jwt.SignKey)
+	return token.SignedString(jwt.signKey)
 }
 
-// expiresAt 过期时间
-func (jwt *JWT) expiresAt() int64 {
+// NewExpiresAt 过期时间
+func (jwt *JWT) NewExpiresAt() *jwtpkg.NumericDate {
 	timenow := TimenowInTimezone()
 
-	return timenow.Add(ExpiresIn).Unix()
+	return jwtpkg.NewNumericDate(timenow.Add(jwt.expiresIn))
 }
 
 // parseTokenString 使用 jwtpkg.ParseWithClaims 解析 Token
 func (jwt *JWT) parseTokenString(tokenString string) (*jwtpkg.Token, error) {
 	return jwtpkg.ParseWithClaims(tokenString, &JWTCustomClaims{}, func(token *jwtpkg.Token) (interface{}, error) {
-		return jwt.SignKey, nil
+		return jwt.signKey, nil
 	})
 }
 
