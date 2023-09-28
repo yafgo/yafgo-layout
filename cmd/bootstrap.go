@@ -26,6 +26,9 @@ func (app *Application) preRun() {
 
 	// 初始化 migration
 	migration.Setup(global.Ycfg.Viper)
+
+	// 初始化飞书等通知
+	global.SetupNotify()
 }
 
 // setupConfig 初始化配置
