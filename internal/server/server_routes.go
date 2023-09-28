@@ -4,6 +4,7 @@ import (
 	"yafgo/yafgo-layout/internal/app/http/controllers/api"
 	"yafgo/yafgo-layout/internal/app/http/controllers/web"
 	"yafgo/yafgo-layout/internal/global"
+	"yafgo/yafgo-layout/internal/middleware"
 	"yafgo/yafgo-layout/resource/docs"
 
 	"github.com/gin-gonic/gin"
@@ -39,11 +40,15 @@ func registerRoutes(router *gin.Engine) {
 
 // handleSwagger 启用 swagger
 func handleSwagger(router *gin.Engine) {
-	docs.SwaggerInfo.Schemes = []string{"https", "http"}
-	if global.IsDev() {
-		docs.SwaggerInfo.Schemes = []string{"http", "https"}
+	apiGroup := router.Group("/api/docs")
+
+	docs.SwaggerInfo.Schemes = []string{"http", "https"}
+	if !global.IsDev() {
+		docs.SwaggerInfo.Schemes = []string{"https", "http"}
+		// 非开发环境启用 BasicAuth 验证
+		apiGroup.Use(middleware.BasicAuth("swagger"))
 	}
-	router.GET("/api/docs/*any", ginswagger.WrapHandler(
+	apiGroup.GET("/*any", ginswagger.WrapHandler(
 		swaggerfiles.Handler,
 		ginswagger.PersistAuthorization(true),
 	))
