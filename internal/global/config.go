@@ -14,23 +14,23 @@ func AppName() string {
 	return appname
 }
 
+// AppEnv 当前环境
+func AppEnv() string {
+	Ycfg.SetDefault("env", "dev")
+	return Ycfg.GetString("env")
+}
+
 // IsProd 是否生产环境
 func IsProd() bool {
-	Ycfg.SetDefault("env", "dev")
-	_env := Ycfg.GetString("env")
-	return _env == "prod"
+	return AppEnv() == "prod"
 }
 
 // IsDev 是否开发环境
 func IsDev() bool {
-	Ycfg.SetDefault("env", "dev")
-	_env := Ycfg.GetString("env")
-	return _env == "dev"
+	return AppEnv() == "dev"
 }
 
 // IsTest 是否测试环境
 func IsTest() bool {
-	Ycfg.SetDefault("env", "dev")
-	_env := Ycfg.GetString("env")
-	return _env == "test"
+	return AppEnv() == "test"
 }
