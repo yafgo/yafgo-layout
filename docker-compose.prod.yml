@@ -1,0 +1,18 @@
+version: "3"
+name: "yafgo_prod"
+
+# 用于在本地测试prod构建
+services:
+  yafgo:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: yafgo_prod:latest
+    container_name: yafgo_prod
+    ports:
+      - "18080:8080"
+    working_dir: "/app"
+    volumes:
+      - "./storage:/app/storage"
+    tty: true
+    command: ["-m=dev"]
