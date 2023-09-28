@@ -17,7 +17,7 @@ func Logger() gin.HandlerFunc {
 
 		// req_id 存到 ctx 中
 		trace := hash.Md5(hash.GenUUID())
-		ctx.Set("req_id", trace)
+		ctx.Set("reqid", trace)
 
 		// request info
 		headers := ctx.Request.Header.Clone()

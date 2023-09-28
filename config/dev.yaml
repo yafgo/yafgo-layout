@@ -6,12 +6,12 @@ http:
 log:
   level: debug
   encoding: console # json or console
-  path: "./storage/logs" # log 文件目录
-  filename: "yafgo.log" # log 文件名
-  prefix: "yafgo" # log 文件名
-  time_format: "2006-01-02 15:04:05.000000" # 时间格式
+  # path: "./storage/logs" # log 文件目录
+  # filename: "yafgo.log" # log 文件名
+  # prefix: "yafgo" # log 前缀
+  # time_format: "2006-01-02 15:04:05.000000" # 时间格式
   stdout: true # 是否输出到 stdout
-  ctx_keys: ["req_id"]
+  ctx_keys: ["reqid"]
   rotate:
     max_size: 64 # 每个日志文件保存的最大尺寸,单位：M
     max_age: 7 # 文件最多保存多少天
