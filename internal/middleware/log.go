@@ -69,7 +69,7 @@ func Logger() gin.HandlerFunc {
 	}
 }
 
-type responseBodyWriter struct {
+/* type responseBodyWriter struct {
 	gin.ResponseWriter
 	body *bytes.Buffer
 }
@@ -77,4 +77,4 @@ type responseBodyWriter struct {
 func (r responseBodyWriter) Write(b []byte) (int, error) {
 	r.body.Write(b)
 	return r.ResponseWriter.Write(b)
-}
+} */
