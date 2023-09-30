@@ -21,16 +21,16 @@ func (app *Application) preRun() {
 	app.initTimeZone()
 
 	// 初始化 logger
-	app.setupLogger(g.Ycfg)
+	app.setupLogger(g.Cfg)
 
 	// 初始化 cache
-	g.SetupCache(ctx, g.Ycfg)
+	g.SetupCache(ctx, g.Cfg)
 
 	// 初始化 gorm
-	app.setupGorm(g.Ycfg)
+	app.setupGorm(g.Cfg)
 
 	// 初始化 migration
-	migration.Setup(g.Ycfg.Viper)
+	migration.Setup(g.Cfg.Viper)
 
 	// 初始化飞书等通知
 	g.SetupNotify()
@@ -38,7 +38,7 @@ func (app *Application) preRun() {
 
 // setupConfig 初始化配置
 func (app *Application) setupConfig() {
-	g.Ycfg = ycfg.New(app.Mode,
+	g.Cfg = ycfg.New(app.Mode,
 		ycfg.WithType("yaml"),
 		ycfg.WithEnvPrefix("YAFGO"),
 		// ycfg.WithUnmarshalObj(g.Config),

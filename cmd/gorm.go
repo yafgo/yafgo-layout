@@ -32,7 +32,7 @@ func init() {
 func runGormGen(cmd *cobra.Command, args []string) {
 
 	color.Successln("Run gorm_gen...")
-	conf := g.Ycfg
+	conf := g.Cfg
 	dsn := conf.GetString("data.mysql.default")
 	gorm_gen.RunGenerate(dsn)
 

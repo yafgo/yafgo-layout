@@ -4,20 +4,20 @@ import (
 	"yafgo/yafgo-layout/pkg/sys/ycfg"
 )
 
-// 全局 Ycfg 对象
-var Ycfg *ycfg.Config
+// 全局 Cfg 对象
+var Cfg *ycfg.Config
 
 // AppName 当前应用名, 用于log前缀等
 func AppName() string {
-	Ycfg.SetDefault("appname", "YAFGO")
-	appname := Ycfg.GetString("appname")
+	Cfg.SetDefault("appname", "YAFGO")
+	appname := Cfg.GetString("appname")
 	return appname
 }
 
 // AppEnv 当前环境
 func AppEnv() string {
-	Ycfg.SetDefault("env", "dev")
-	return Ycfg.GetString("env")
+	Cfg.SetDefault("env", "dev")
+	return Cfg.GetString("env")
 }
 
 // IsProd 是否生产环境
