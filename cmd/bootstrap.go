@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"time"
 	"yafgo/yafgo-layout/internal/global"
 	"yafgo/yafgo-layout/internal/query"
@@ -13,6 +14,7 @@ import (
 
 // preRun 前置操作
 func (app *Application) preRun() {
+	ctx := context.Background()
 	// 初始化配置
 	// 由于大多逻辑都可能用到配置, 所以配置初始化应该首先被执行
 	app.setupConfig()
@@ -20,6 +22,9 @@ func (app *Application) preRun() {
 
 	// 初始化 logger
 	app.setupLogger(global.Ycfg)
+
+	// 初始化 cache
+	global.SetupCache(ctx, global.Ycfg)
 
 	// 初始化 gorm
 	app.setupGorm(global.Ycfg)

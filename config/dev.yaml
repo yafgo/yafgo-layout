@@ -32,6 +32,19 @@ data:
     driver: "mysql"
     charset: "utf8mb4"
 
+# redis configuration
+redis:
+  default:
+    db: 8
+    addr: "127.0.0.1:6379"
+    password: ""
+    prefix: "yafgo"
+  cache:
+    db: 8
+    addr: "127.0.0.1:6379"
+    password: ""
+    prefix: "yafgo"
+
 # 飞书robot配置
 feishu:
   # webhook完整地址: "https://open.feishu.cn/open-apis/bot/v2/hook/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
