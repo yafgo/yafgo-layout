@@ -1,4 +1,4 @@
-package global
+package g
 
 import (
 	"gorm.io/gorm"

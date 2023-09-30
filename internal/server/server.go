@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-	"yafgo/yafgo-layout/internal/global"
+	"yafgo/yafgo-layout/internal/g"
 	httppkg "yafgo/yafgo-layout/pkg/http"
 
 	"github.com/gookit/color"
@@ -51,7 +51,7 @@ func (s *webService) CmdRun(cmd *cobra.Command, args []string) {
 
 // RunWebServer 启动 web server
 func (s *webService) RunWebServer(ctx context.Context) {
-	cfg := global.Ycfg
+	cfg := g.Ycfg
 	isProd := cfg.GetString("env") == "prod"
 	port := cfg.GetInt("http.port")
 	addr := fmt.Sprintf(":%d", port)

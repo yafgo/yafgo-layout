@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"context"
-	"yafgo/yafgo-layout/internal/global"
+	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/pkg/sys/ylog"
 
 	"github.com/gin-gonic/gin"
@@ -26,7 +26,7 @@ func BasicAuth(configKey ...string) gin.HandlerFunc {
 	}
 	// 配置项中的key: "basic_auth.default"
 	cfgKey = "basic_auth." + cfgKey
-	accounts := global.Ycfg.GetStringMapString(cfgKey)
+	accounts := g.Ycfg.GetStringMapString(cfgKey)
 	if len(accounts) == 0 {
 		accounts["demo"] = "ydaefmgooursr"
 	}

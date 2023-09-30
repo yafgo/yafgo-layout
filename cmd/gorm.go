@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"yafgo/yafgo-layout/internal/global"
+	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/internal/gorm_gen"
 
 	"github.com/gookit/color"
@@ -32,7 +32,7 @@ func init() {
 func runGormGen(cmd *cobra.Command, args []string) {
 
 	color.Successln("Run gorm_gen...")
-	conf := global.Ycfg
+	conf := g.Ycfg
 	dsn := conf.GetString("data.mysql.default")
 	gorm_gen.RunGenerate(dsn)
 

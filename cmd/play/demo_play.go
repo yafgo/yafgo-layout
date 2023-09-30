@@ -3,7 +3,7 @@ package play
 import (
 	"context"
 	"fmt"
-	"yafgo/yafgo-layout/internal/global"
+	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/internal/model"
 	"yafgo/yafgo-layout/internal/query"
 	"yafgo/yafgo-layout/pkg/sys/ylog"
@@ -34,7 +34,7 @@ var demoGorm = &cobra.Command{
 		ctx := context.Background()
 		ylog.Debug(ctx, "moduleName string")
 		res := make([]map[string]any, 0)
-		tx := global.Mysql.Raw("show tables").Find(&res)
+		tx := g.Mysql.Raw("show tables").Find(&res)
 		if tx.Error != nil {
 			ylog.Errorf(ctx, "err: %v", tx.Error)
 			return

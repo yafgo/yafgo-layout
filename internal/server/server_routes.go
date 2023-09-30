@@ -3,7 +3,7 @@ package server
 import (
 	"yafgo/yafgo-layout/internal/app/http/controllers/api"
 	"yafgo/yafgo-layout/internal/app/http/controllers/web"
-	"yafgo/yafgo-layout/internal/global"
+	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/internal/middleware"
 	"yafgo/yafgo-layout/resource/docs"
 
@@ -17,7 +17,7 @@ func registerRoutes(router *gin.Engine) {
 	registerGlobalMiddleware(router)
 
 	router.GET("", func(ctx *gin.Context) {
-		appname := global.AppName()
+		appname := g.AppName()
 		ctx.JSON(200, gin.H{"Hello": appname})
 	})
 
@@ -43,7 +43,7 @@ func handleSwagger(router *gin.Engine) {
 	apiGroup := router.Group("/api/docs")
 
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
-	if !global.IsDev() {
+	if !g.IsDev() {
 		docs.SwaggerInfo.Schemes = []string{"https", "http"}
 		// 非开发环境启用 BasicAuth 验证
 		apiGroup.Use(middleware.BasicAuth("swagger"))

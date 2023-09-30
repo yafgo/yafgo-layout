@@ -1,4 +1,4 @@
-package global
+package g
 
 import (
 	"yafgo/yafgo-layout/pkg/notify"

@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 	"time"
-	"yafgo/yafgo-layout/internal/global"
+	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/internal/query"
 	"yafgo/yafgo-layout/pkg/database"
 	"yafgo/yafgo-layout/pkg/logger"
@@ -21,27 +21,27 @@ func (app *Application) preRun() {
 	app.initTimeZone()
 
 	// 初始化 logger
-	app.setupLogger(global.Ycfg)
+	app.setupLogger(g.Ycfg)
 
 	// 初始化 cache
-	global.SetupCache(ctx, global.Ycfg)
+	g.SetupCache(ctx, g.Ycfg)
 
 	// 初始化 gorm
-	app.setupGorm(global.Ycfg)
+	app.setupGorm(g.Ycfg)
 
 	// 初始化 migration
-	migration.Setup(global.Ycfg.Viper)
+	migration.Setup(g.Ycfg.Viper)
 
 	// 初始化飞书等通知
-	global.SetupNotify()
+	g.SetupNotify()
 }
 
 // setupConfig 初始化配置
 func (app *Application) setupConfig() {
-	global.Ycfg = ycfg.New(app.Mode,
+	g.Ycfg = ycfg.New(app.Mode,
 		ycfg.WithType("yaml"),
 		ycfg.WithEnvPrefix("YAFGO"),
-		// ycfg.WithUnmarshalObj(global.Config),
+		// ycfg.WithUnmarshalObj(g.Config),
 	)
 }
 
@@ -53,7 +53,7 @@ func (app *Application) setupGorm(cfg *ycfg.Config) {
 		panic(err)
 	}
 	// 赋值全局 mysql 对象
-	global.Mysql = gormDB
+	g.Mysql = gormDB
 	// 设置 query 使用的默认 db 对象
 	query.SetDefault(gormDB)
 }

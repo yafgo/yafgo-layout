@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"yafgo/yafgo-layout/internal/global"
+	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/pkg/sys/ycfg"
 	"yafgo/yafgo-layout/pkg/sys/ylog"
 )
@@ -69,7 +69,7 @@ func (app *Application) setupLogger(cfg *ycfg.Config) {
 		},
 	}
 	if lgCfg.Prefix == "" {
-		lgCfg.Prefix = global.AppName()
+		lgCfg.Prefix = g.AppName()
 	}
 	lg := ylog.New(lgCfg)
 	ylog.SetDefaultLogger(lg)

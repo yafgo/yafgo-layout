@@ -1,7 +1,7 @@
 package web
 
 import (
-	"yafgo/yafgo-layout/internal/global"
+	"yafgo/yafgo-layout/internal/g"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,5 +12,5 @@ type IndexController struct {
 
 // Index index
 func (ctrl *IndexController) Index(c *gin.Context) {
-	c.String(200, "Hello "+global.AppName())
+	c.String(200, "Hello "+g.AppName())
 }
