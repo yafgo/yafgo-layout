@@ -1,10 +1,22 @@
-package cmd
+package g
 
 import (
-	"yafgo/yafgo-layout/internal/g"
-	"yafgo/yafgo-layout/pkg/sys/ycfg"
+	"sync"
 	"yafgo/yafgo-layout/pkg/sys/ylog"
 )
+
+// 全局 logger 对象
+var instLogger *ylog.Logger
+var onceLogger sync.Once
+
+// Log 获取全局 logger 对象
+func Log() *ylog.Logger {
+	onceLogger.Do(func() {
+		instLogger = setupLogger()
+	})
+
+	return instLogger
+}
 
 // zap 默认配置
 /* [yaml 配置项]
@@ -45,8 +57,9 @@ var loggerConfigDefault = map[string]any{
 }
 
 // setupLogger 初始化 logger
-func (app *Application) setupLogger(cfg *ycfg.Config) {
+func setupLogger() *ylog.Logger {
 	// 初始默认配置
+	cfg := Cfg()
 	cfg.SetDefault("log", loggerConfigDefault)
 	subCfg := cfg.Sub("log")
 
@@ -69,8 +82,10 @@ func (app *Application) setupLogger(cfg *ycfg.Config) {
 		},
 	}
 	if lgCfg.Prefix == "" {
-		lgCfg.Prefix = g.AppName()
+		lgCfg.Prefix = AppName()
 	}
 	lg := ylog.New(lgCfg)
+	// 替换ylog包的默认 logger
 	ylog.SetDefaultLogger(lg)
+	return lg
 }
