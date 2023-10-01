@@ -6,30 +6,23 @@ import (
 	"yafgo/yafgo-layout/pkg/sys/ycfg"
 )
 
+// 全局 Cfg 对象
+var instCfg *ycfg.Config
+var onceCfg sync.Once
+
 // Cfg 获取全局 Cfg 对象
 func Cfg() *ycfg.Config {
-	globalCfg := newCfg()(app.App().Mode())
-	return globalCfg
-}
+	// 初始化配置实例
+	onceCfg.Do(func() {
+		configName := app.App().Mode()
+		instCfg = ycfg.New(configName,
+			ycfg.WithType("yaml"),
+			ycfg.WithEnvPrefix("YAFGO"),
+			// ycfg.WithUnmarshalObj(g.Config),
+		)
+	})
 
-func newCfg() func(configName string) *ycfg.Config {
-	// 全局 Cfg 对象
-	var once sync.Once
-	var cfgInst *ycfg.Config
-
-	return func(configName string) *ycfg.Config {
-
-		// 初始化配置实例
-		once.Do(func() {
-			cfgInst = ycfg.New(configName,
-				ycfg.WithType("yaml"),
-				ycfg.WithEnvPrefix("YAFGO"),
-				// ycfg.WithUnmarshalObj(g.Config),
-			)
-		})
-
-		return cfgInst
-	}
+	return instCfg
 }
 
 // AppName 当前应用名, 用于log前缀等

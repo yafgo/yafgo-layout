@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"time"
 	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/pkg/app"
@@ -11,7 +10,7 @@ import (
 func RunApp() {
 	_app := app.App()
 	_app.PreRun = func() {
-		ctx := context.Background()
+		// ctx := context.Background()
 		// 初始化配置
 		// 由于大多逻辑都可能用到配置, 所以配置初始化应该首先被执行
 		// app.setupConfig()
@@ -19,9 +18,6 @@ func RunApp() {
 
 		// 初始化 logger
 		// app.setupLogger(g.Cfg())
-
-		// 初始化 cache
-		g.SetupCache(ctx, g.Cfg())
 
 		// 初始化 migration
 		migration.Setup(g.Cfg().Viper)
@@ -34,7 +30,6 @@ func RunApp() {
 
 // preRun 前置操作
 func (app *Application) preRun() {
-	ctx := context.Background()
 	// 初始化配置
 	// 由于大多逻辑都可能用到配置, 所以配置初始化应该首先被执行
 	// app.setupConfig()
@@ -42,9 +37,6 @@ func (app *Application) preRun() {
 
 	// 初始化 logger
 	app.setupLogger(g.Cfg())
-
-	// 初始化 cache
-	g.SetupCache(ctx, g.Cfg())
 
 	// 初始化 migration
 	migration.Setup(g.Cfg().Viper)

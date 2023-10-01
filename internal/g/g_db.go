@@ -10,30 +10,25 @@ import (
 	"gorm.io/gorm"
 )
 
+// 全局 mysql 对象
+var instMysql *gorm.DB
+var onceMysql sync.Once
+
 // 全局默认 mysql 对象
 func Mysql() *gorm.DB {
-	return newMysql()()
-}
+	onceMysql.Do(func() {
+		gCfg := Cfg()
+		gormLogger := logger.NewGormLogger(ylog.DefaultLogger())
+		gormDB, err := database.NewGormMysql(gCfg, gormLogger)
+		if err != nil {
+			panic(err)
+		}
+		instMysql = gormDB
+		// 设置 query 包默认使用的 db 实例
+		query.SetDefault(gormDB)
+	})
 
-func newMysql() func() *gorm.DB {
-	var once sync.Once
-	var db *gorm.DB
-
-	return func() *gorm.DB {
-		once.Do(func() {
-			gCfg := Cfg()
-			gormLogger := logger.NewGormLogger(ylog.DefaultLogger())
-			gormDB, err := database.NewGormMysql(gCfg, gormLogger)
-			if err != nil {
-				panic(err)
-			}
-			db = gormDB
-			// 设置 query 包默认使用的 db 实例
-			query.SetDefault(gormDB)
-		})
-
-		return db
-	}
+	return instMysql
 }
 
 // var MysqlOther *gorm.DB // 另一个数据源的 mysql 对象
