@@ -10,8 +10,6 @@ import (
 func RunApp() {
 	_app := app.App()
 	_app.PreRun = func() {
-		// ctx := context.Background()
-
 		initTimeZone()
 
 		// 初始化 migration
