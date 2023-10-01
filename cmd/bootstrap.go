@@ -4,13 +4,8 @@ import (
 	"context"
 	"time"
 	"yafgo/yafgo-layout/internal/g"
-	"yafgo/yafgo-layout/internal/query"
 	"yafgo/yafgo-layout/pkg/app"
-	"yafgo/yafgo-layout/pkg/database"
-	"yafgo/yafgo-layout/pkg/logger"
 	"yafgo/yafgo-layout/pkg/migration"
-	"yafgo/yafgo-layout/pkg/sys/ycfg"
-	"yafgo/yafgo-layout/pkg/sys/ylog"
 )
 
 func RunApp() {
@@ -27,9 +22,6 @@ func RunApp() {
 
 		// 初始化 cache
 		g.SetupCache(ctx, g.Cfg())
-
-		// 初始化 gorm
-		// app.setupGorm(g.Cfg())
 
 		// 初始化 migration
 		migration.Setup(g.Cfg().Viper)
@@ -54,9 +46,6 @@ func (app *Application) preRun() {
 	// 初始化 cache
 	g.SetupCache(ctx, g.Cfg())
 
-	// 初始化 gorm
-	app.setupGorm(g.Cfg())
-
 	// 初始化 migration
 	migration.Setup(g.Cfg().Viper)
 
@@ -72,19 +61,6 @@ func (app *Application) setupConfig() {
 		// ycfg.WithUnmarshalObj(g.Config),
 	)
 } */
-
-// setupGorm 初始化 gorm
-func (app *Application) setupGorm(cfg *ycfg.Config) {
-	gormLogger := logger.NewGormLogger(ylog.DefaultLogger())
-	gormDB, err := database.NewGormMysql(cfg, gormLogger)
-	if err != nil {
-		panic(err)
-	}
-	// 赋值全局 mysql 对象
-	g.Mysql = gormDB
-	// 设置 query 使用的默认 db 对象
-	query.SetDefault(gormDB)
-}
 
 func (app *Application) initTimeZone() {
 	var cstZone = time.FixedZone("CST", 8*3600) // 东八区

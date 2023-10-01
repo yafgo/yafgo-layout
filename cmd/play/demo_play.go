@@ -34,7 +34,7 @@ var demoGorm = &cobra.Command{
 		ctx := context.Background()
 		ylog.Debug(ctx, "moduleName string")
 		res := make([]map[string]any, 0)
-		tx := g.Mysql.Raw("show tables").Find(&res)
+		tx := g.Mysql().Raw("show tables").Find(&res)
 		if tx.Error != nil {
 			ylog.Errorf(ctx, "err: %v", tx.Error)
 			return

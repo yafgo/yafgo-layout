@@ -1,7 +1,6 @@
 package g
 
 import (
-	"fmt"
 	"sync"
 	"yafgo/yafgo-layout/pkg/sys/ycfg"
 )
@@ -20,7 +19,6 @@ func Cfg() *ycfg.Config {
 			ycfg.WithEnvPrefix("YAFGO"),
 			// ycfg.WithUnmarshalObj(g.Config),
 		)
-		fmt.Println("执行啊")
 	})
 
 	return globalCfg
