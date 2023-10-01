@@ -5,6 +5,7 @@ import (
 	"time"
 	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/internal/query"
+	"yafgo/yafgo-layout/pkg/app"
 	"yafgo/yafgo-layout/pkg/database"
 	"yafgo/yafgo-layout/pkg/logger"
 	"yafgo/yafgo-layout/pkg/migration"
@@ -12,38 +13,65 @@ import (
 	"yafgo/yafgo-layout/pkg/sys/ylog"
 )
 
+func RunApp() {
+	_app := app.App()
+	_app.PreRun = func() {
+		ctx := context.Background()
+		// 初始化配置
+		// 由于大多逻辑都可能用到配置, 所以配置初始化应该首先被执行
+		// app.setupConfig()
+		// app.initTimeZone()
+
+		// 初始化 logger
+		// app.setupLogger(g.Cfg())
+
+		// 初始化 cache
+		g.SetupCache(ctx, g.Cfg())
+
+		// 初始化 gorm
+		// app.setupGorm(g.Cfg())
+
+		// 初始化 migration
+		migration.Setup(g.Cfg().Viper)
+
+		// 初始化飞书等通知
+		g.SetupNotify()
+	}
+	app.App().Run()
+}
+
 // preRun 前置操作
 func (app *Application) preRun() {
 	ctx := context.Background()
 	// 初始化配置
 	// 由于大多逻辑都可能用到配置, 所以配置初始化应该首先被执行
-	app.setupConfig()
+	// app.setupConfig()
 	app.initTimeZone()
 
 	// 初始化 logger
-	app.setupLogger(g.Cfg)
+	app.setupLogger(g.Cfg())
 
 	// 初始化 cache
-	g.SetupCache(ctx, g.Cfg)
+	g.SetupCache(ctx, g.Cfg())
 
 	// 初始化 gorm
-	app.setupGorm(g.Cfg)
+	app.setupGorm(g.Cfg())
 
 	// 初始化 migration
-	migration.Setup(g.Cfg.Viper)
+	migration.Setup(g.Cfg().Viper)
 
 	// 初始化飞书等通知
 	g.SetupNotify()
 }
 
-// setupConfig 初始化配置
+/* // setupConfig 初始化配置
 func (app *Application) setupConfig() {
 	g.Cfg = ycfg.New(app.Mode,
 		ycfg.WithType("yaml"),
 		ycfg.WithEnvPrefix("YAFGO"),
 		// ycfg.WithUnmarshalObj(g.Config),
 	)
-}
+} */
 
 // setupGorm 初始化 gorm
 func (app *Application) setupGorm(cfg *ycfg.Config) {

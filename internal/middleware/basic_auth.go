@@ -26,7 +26,7 @@ func BasicAuth(configKey ...string) gin.HandlerFunc {
 	}
 	// 配置项中的key: "basic_auth.default"
 	cfgKey = "basic_auth." + cfgKey
-	accounts := g.Cfg.GetStringMapString(cfgKey)
+	accounts := g.Cfg().GetStringMapString(cfgKey)
 	if len(accounts) == 0 {
 		accounts["demo"] = "ydaefmgooursr"
 	}

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"yafgo/yafgo-layout/internal/server"
+	"yafgo/yafgo-layout/pkg/app"
 
 	"github.com/spf13/cobra"
 )
@@ -16,8 +17,8 @@ func init() {
 		Run:   srv.CmdRun,
 	}
 
-	addSubCommand(subCommand{
-		cmd:       subCmd,
-		isDefault: true,
+	app.App().AddSubCommand(app.SubCommand{
+		Cmd:       subCmd,
+		IsDefault: true,
 	})
 }

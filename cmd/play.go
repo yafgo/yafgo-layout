@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"yafgo/yafgo-layout/cmd/play"
+	"yafgo/yafgo-layout/pkg/app"
 )
 
 func init() {
@@ -10,8 +11,8 @@ func init() {
 	if playCmd == nil {
 		return
 	}
-	addSubCommand(subCommand{
-		cmd:       playCmd,
-		isDefault: false,
+	app.App().AddSubCommand(app.SubCommand{
+		Cmd:       playCmd,
+		IsDefault: false,
 	})
 }

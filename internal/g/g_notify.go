@@ -9,5 +9,5 @@ func SetupNotify() {
 }
 
 func FeishuRobot() string {
-	return Cfg.GetString("feishu.default")
+	return Cfg().GetString("feishu.default")
 }
