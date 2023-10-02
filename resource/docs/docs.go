@@ -29,6 +29,28 @@ const docTemplate = `{
                 ],
                 "description": "Index Demo",
                 "tags": [
+                    "API"
+                ],
+                "summary": "Index",
+                "responses": {
+                    "200": {
+                        "description": "{\"code\": 200, \"data\": [...]}",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/": {
+            "get": {
+                "security": [
+                    {
+                        "ApiToken": []
+                    }
+                ],
+                "description": "Index Demo",
+                "tags": [
                     "默认"
                 ],
                 "summary": "Index",
@@ -60,7 +82,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/api",
 	Schemes:          []string{"http", "https"},
 	Title:            "YAFGO API",
-	Description:      "基于 `Gin` 的 golang 项目模板",
+	Description:      "基于 `Gin` 的 golang 项目模板\n- 本页面可以很方便的调试接口，并不需要再手动复制到 postman 之类的工具中\n- 大部分接口需要登录态，可以手动拿到 `登录token`，点击 `Authorize` 按钮，填入 `Bearer {token}` 并保存即可\n- 接口 url 注意看清楚，要加上 `Base URL` 前缀",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

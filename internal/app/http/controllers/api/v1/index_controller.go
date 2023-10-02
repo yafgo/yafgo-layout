@@ -1,4 +1,4 @@
-package api
+package v1
 
 import "github.com/gin-gonic/gin"
 
@@ -10,13 +10,13 @@ type IndexController struct {
 //
 //	@Summary		Index
 //	@Description	Index Demo
-//	@Tags			API
+//	@Tags			默认
 //	@Success		200	{object}	any	"{"code": 200, "data": [...]}"
-//	@Router			/ [get]
+//	@Router			/v1/ [get]
 //	@Security		ApiToken
 func (ctrl *IndexController) Index(c *gin.Context) {
 
 	ctrl.JSON(c, gin.H{
-		"data": "api",
+		"data": "/api/v1/",
 	})
 }

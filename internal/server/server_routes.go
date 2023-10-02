@@ -1,8 +1,6 @@
 package server
 
 import (
-	"yafgo/yafgo-layout/internal/app/http/controllers/api"
-	"yafgo/yafgo-layout/internal/app/http/controllers/web"
 	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/internal/middleware"
 	"yafgo/yafgo-layout/resource/docs"
@@ -23,13 +21,13 @@ func registerRoutes(router *gin.Engine) {
 
 	// 静态文件
 	router.StaticFile("/favicon.ico", "resource/public/favicon.ico")
-	// router.Static("/static", "public/static/")
+	router.Static("/static", "public/static/")
 
 	// api 路由
-	api.RegisterRoutes(router)
+	registerRoutesApi(router)
 
 	// web 路由
-	web.RegisterRoutes(router)
+	registerRoutesWeb(router)
 
 	// swagger
 	handleSwagger(router)
