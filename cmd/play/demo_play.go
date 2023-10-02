@@ -3,6 +3,7 @@ package play
 import (
 	"context"
 	"fmt"
+	"time"
 	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/internal/model"
 	"yafgo/yafgo-layout/internal/query"
@@ -32,7 +33,7 @@ var demoGorm = &cobra.Command{
 	Short: "gorm测试",
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := context.Background()
-		ylog.Debug(ctx, "moduleName string")
+		ylog.Debug(ctx, "GORM 测试")
 		res := make([]map[string]any, 0)
 		tx := g.Mysql().Raw("show tables").Find(&res)
 		if tx.Error != nil {
@@ -41,8 +42,12 @@ var demoGorm = &cobra.Command{
 		}
 		ylog.Debug(ctx, res)
 
+		now := time.Now()
 		user := &model.User{
-			Name: "张三",
+			Name:     "张三",
+			Phone:    fmt.Sprintf("1%d", now.Unix()),
+			Username: fmt.Sprintf("yuser_%d", now.Unix()),
+			Password: "123456",
 		}
 		userDO := query.User.WithContext(ctx)
 		userDO.Create(user)

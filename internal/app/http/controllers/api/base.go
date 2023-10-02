@@ -31,6 +31,10 @@ func (ctrl *BaseAPIController) getDebugData(ctx *gin.Context) (data any) {
 	return nil
 }
 
+func (ctrl *BaseAPIController) Success(ctx *gin.Context, data ...any) {
+	ctrl.SuccessWithMsg(ctx, "操作成功!", data...)
+}
+
 func (ctrl *BaseAPIController) SuccessWithMsg(ctx *gin.Context, msg string, data ...any) {
 	respData := gin.H{
 		"success": true,
@@ -44,10 +48,6 @@ func (ctrl *BaseAPIController) SuccessWithMsg(ctx *gin.Context, msg string, data
 		respData["debug"] = debugData
 	}
 	ctx.JSON(http.StatusOK, respData)
-}
-
-func (ctrl *BaseAPIController) Success(ctx *gin.Context, data ...any) {
-	ctrl.SuccessWithMsg(ctx, "操作成功!", data...)
 }
 
 // Error 传参 err 对象，未传参 msg 时使用默认消息

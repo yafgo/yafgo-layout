@@ -15,6 +15,8 @@ const TableNameUser = "t_user"
 // User mapped from table <t_user>
 type User struct {
 	ID        int64          `gorm:"column:id;primaryKey;autoIncrement:true" json:"id"`
+	Username  string         `gorm:"column:username;not null;comment:用户名" json:"username"`
+	Password  string         `gorm:"column:password;not null;comment:密码" json:"password"`
 	Phone     string         `gorm:"column:phone;not null;comment:手机号" json:"phone"`
 	Nickname  string         `gorm:"column:nickname;not null;comment:昵称" json:"nickname"`
 	Avatar    string         `gorm:"column:avatar;not null;comment:头像" json:"avatar"`
