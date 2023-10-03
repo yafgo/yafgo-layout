@@ -1,7 +1,10 @@
 package api
 
 import (
+	"errors"
 	"net/http"
+	"strings"
+	"yafgo/yafgo-layout/pkg/validators"
 
 	"github.com/gin-gonic/gin"
 )
@@ -88,4 +91,18 @@ func (ctrl *BaseAPIController) ErrorWithData(ctx *gin.Context, err error, msg st
 		respData["debug"] = debugData
 	}
 	ctx.JSON(http.StatusOK, respData)
+}
+
+// ParamError 参数错误
+func (ctrl *BaseAPIController) ParamError(ctx *gin.Context, err error, msg ...string) {
+	errMsgs := validators.TranslateErrors(err)
+	if errMsgs != nil {
+		var sb strings.Builder
+		for _, v := range errMsgs {
+			sb.WriteString(v + "\n")
+		}
+		err = errors.New(strings.TrimSuffix(sb.String(), "\n"))
+	}
+
+	ctrl.Error(ctx, err, msg...)
 }
