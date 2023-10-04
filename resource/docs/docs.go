@@ -63,6 +63,111 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/v1/auth/login/username": {
+            "post": {
+                "security": [
+                    {
+                        "ApiToken": []
+                    }
+                ],
+                "description": "用户名登录",
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "用户名登录",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.ReqUsername"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\": 200, \"data\": [...]}",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/register/username": {
+            "post": {
+                "security": [
+                    {
+                        "ApiToken": []
+                    }
+                ],
+                "description": "用户名注册",
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "用户名注册",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.ReqUsernameRegister"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"code\": 200, \"data\": [...]}",
+                        "schema": {
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "requests.ReqUsername": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "verify_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "requests.ReqUsernameRegister": {
+            "type": "object",
+            "required": [
+                "password",
+                "username",
+                "verify_code"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "verify_code": {
+                    "type": "string"
+                }
+            }
         }
     },
     "securityDefinitions": {

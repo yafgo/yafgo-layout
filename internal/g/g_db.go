@@ -14,7 +14,7 @@ import (
 var instMysql *gorm.DB
 var onceMysql sync.Once
 
-// 全局默认 mysql 对象
+// Mysql 全局默认 mysql 实例
 func Mysql() *gorm.DB {
 	onceMysql.Do(func() {
 		gCfg := Cfg()
@@ -24,11 +24,19 @@ func Mysql() *gorm.DB {
 			panic(err)
 		}
 		instMysql = gormDB
-		// 设置 query 包默认使用的 db 实例
-		query.SetDefault(gormDB)
 	})
 
 	return instMysql
+}
+
+// Query 全局默认 gorm Query 实例
+func Query() *query.Query {
+	if !query.Q.Available() {
+		db := Mysql()
+		// 设置 query 包默认使用的 db 实例
+		query.SetDefault(db)
+	}
+	return query.Q
 }
 
 // var MysqlOther *gorm.DB // 另一个数据源的 mysql 对象

@@ -25,6 +25,13 @@ func registerRoutesApi(router *gin.Engine) {
 			rV1.GET("", ic.Index)
 			rV1.GET("todo", todo)
 		}
+
+		// auth
+		authC := new(v1.AuthController)
+		{
+			rV1.POST("/auth/register/username", authC.RegisterByUsername)
+			rV1.POST("/auth/login/username", authC.LoginByUsername)
+		}
 	}
 }
 
