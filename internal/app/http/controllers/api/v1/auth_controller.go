@@ -5,6 +5,7 @@ import (
 	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/internal/model"
 	"yafgo/yafgo-layout/pkg/database"
+	"yafgo/yafgo-layout/pkg/hash"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,7 +31,20 @@ func (ctrl *AuthController) LoginByUsername(c *gin.Context) {
 		return
 	}
 
-	ctrl.JSON(c, gin.H{
+	userQ := g.Query().User
+	userDo := userQ.WithContext(c)
+	user, err := userDo.Where(userQ.Username.Eq(reqData.Username)).First()
+	if err != nil {
+		ctrl.Error(c, err, "用户名不存在")
+		return
+	}
+
+	if !hash.BcryptCheck(reqData.Password, user.Password) {
+		ctrl.Error(c, nil, "密码不正确")
+		return
+	}
+
+	ctrl.SuccessWithMsg(c, "登录成功", gin.H{
 		"data": reqData,
 	})
 }
@@ -63,8 +77,8 @@ func (ctrl *AuthController) RegisterByUsername(c *gin.Context) {
 		return
 	}
 
-	ctrl.JSON(c, gin.H{
-		"data": user,
-		"err":  err,
+	ctrl.SuccessWithMsg(c, "注册成功", gin.H{
+		"id":       user.ID,
+		"username": user.Username,
 	})
 }
