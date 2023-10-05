@@ -6,6 +6,7 @@ import (
 	"yafgo/yafgo-layout/internal/model"
 	"yafgo/yafgo-layout/pkg/database"
 	"yafgo/yafgo-layout/pkg/hash"
+	"yafgo/yafgo-layout/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -44,8 +45,19 @@ func (ctrl *AuthController) LoginByUsername(c *gin.Context) {
 		return
 	}
 
+	// 颁发jwtToken
+	token, err := g.Jwt().IssueToken(jwt.CustomClaims{UserID: user.ID})
+	if err != nil {
+		ctrl.Error(c, err, "生成token失败")
+		return
+	}
+
 	ctrl.SuccessWithMsg(c, "登录成功", gin.H{
-		"data": reqData,
+		"token": token,
+		"user": gin.H{
+			"id":       user.ID,
+			"username": user.Username,
+		},
 	})
 }
 
@@ -77,8 +89,18 @@ func (ctrl *AuthController) RegisterByUsername(c *gin.Context) {
 		return
 	}
 
+	// 颁发jwtToken
+	token, err := g.Jwt().IssueToken(jwt.CustomClaims{UserID: user.ID})
+	if err != nil {
+		ctrl.Error(c, err, "生成token失败")
+		return
+	}
+
 	ctrl.SuccessWithMsg(c, "注册成功", gin.H{
-		"id":       user.ID,
-		"username": user.Username,
+		"token": token,
+		"user": gin.H{
+			"id":       user.ID,
+			"username": user.Username,
+		},
 	})
 }

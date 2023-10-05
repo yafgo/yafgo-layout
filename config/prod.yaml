@@ -3,6 +3,9 @@ env: prod
 http:
   port: 8080
 
+jwt:
+  sign_key: "yafgo-signkey-yafgo"
+
 log:
   level: info
   encoding: json # json or console
