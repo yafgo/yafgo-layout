@@ -1,7 +1,7 @@
 package database
 
 import (
-	mysql2 "github.com/go-sql-driver/mysql"
+	"github.com/go-sql-driver/mysql"
 )
 
 // 在代码中怎么判断 Duplicate Entry error:
@@ -14,7 +14,7 @@ var (
 
 // MysqlErrCode 根据mysql错误信息返回错误代码
 func MysqlErrCode(err error) int {
-	mysqlErr, ok := err.(*mysql2.MySQLError)
+	mysqlErr, ok := err.(*mysql.MySQLError)
 	if !ok {
 		return 0
 	}

@@ -6,7 +6,6 @@ import (
 	"time"
 	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/internal/model"
-	"yafgo/yafgo-layout/internal/query"
 	"yafgo/yafgo-layout/pkg/sys/ylog"
 
 	"github.com/spf13/cobra"
@@ -49,7 +48,7 @@ var demoGorm = &cobra.Command{
 			Username: fmt.Sprintf("yuser_%d", now.Unix()),
 			Password: "123456",
 		}
-		userDO := query.User.WithContext(ctx)
+		userDO := g.Query().User.WithContext(ctx)
 		userDO.Create(user)
 		ylog.Debug(ctx, user)
 
