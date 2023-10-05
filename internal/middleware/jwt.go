@@ -2,10 +2,10 @@ package middleware
 
 import (
 	"net/http"
+	"strconv"
 	"yafgo/yafgo-layout/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/cast"
 )
 
 // JWTAuth 用于处理 jwt 鉴权，如果未登录则返回错误
@@ -16,7 +16,7 @@ func JWTAuth(j *jwt.JWT, abort ...bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 这里 jwt 鉴权从标头 Authorization:Bearer xxxxx 中获取信息，并验证 JWT 的准确性
 		// 登录时回返回token信息,前端需要把token存储到cookie或者本地localStorage中 不过需要跟后端协商过期时间 可以约定刷新令牌或者重新登录
-		claims, err := j.ParserToken(c)
+		claims, err := j.ParserTokenFromHeader(c)
 		if err != nil {
 			if len(abort) > 0 && !abort[0] {
 				// abort 传false的情况
@@ -35,17 +35,10 @@ func JWTAuth(j *jwt.JWT, abort ...bool) gin.HandlerFunc {
 			}
 		}
 
-		/* if time.Until(claims.ExpiresAt.Time) < time.Duration(claims.BufferTime) {
-			claims.ExpiresAt = j.NewExpiresAt()
-			newToken, _ := j.CreateToken(*claims)
-			c.Header("x-new-token", newToken)
-			c.Header("x-new-expires-at", cast.ToString(claims.ExpiresAt))
-		} */
-
 		// 将用户信息存入 gin.context 里，后续 auth 包将从这里拿到当前用户数据
 		c.Set("claims", claims)
-		c.Set("current_user_id", claims.ID)
-		c.Set("current_user_id_str", cast.ToString(claims.ID))
+		c.Set("current_user_id", claims.UserID)
+		c.Set("current_user_id_str", strconv.FormatInt(claims.UserID, 10))
 
 		// c.Next()
 	}
