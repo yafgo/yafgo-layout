@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"strings"
 	"time"
 	"yafgo/yafgo-layout/pkg/sys/ylog"
@@ -40,13 +39,9 @@ func Stats() map[string]int {
 	}
 }
 
-func init() {
-	startFeishuMsgConsumer()
-}
-
 func startFeishuMsgConsumer() {
 	go func() {
-		log.Println("启动飞书队列")
+		ylog.Infof(context.Background(), "启动飞书队列")
 		for msg := range feishuMsgQueue {
 			if msg == nil {
 				continue
@@ -115,6 +110,7 @@ func SetupFeishu(sysName, appEnv, robotUrl string) {
 	_sysName = sysName
 	defaultAppEnv = appEnv
 	defaultRobotUrl = robotUrl
+	startFeishuMsgConsumer()
 }
 
 func Feishu() (fsUtil *feishuUtil) {
