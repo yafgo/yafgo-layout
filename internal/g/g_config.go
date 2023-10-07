@@ -2,7 +2,6 @@ package g
 
 import (
 	"sync"
-	"yafgo/yafgo-layout/pkg/app"
 	"yafgo/yafgo-layout/pkg/sys/ycfg"
 )
 
@@ -14,7 +13,8 @@ var onceCfg sync.Once
 func Cfg() *ycfg.Config {
 	// 初始化配置实例
 	onceCfg.Do(func() {
-		configName := app.App().Mode()
+		// configName := app.App().Mode()
+		configName := "dev"
 		instCfg = ycfg.New(configName,
 			ycfg.WithType("yaml"),
 			ycfg.WithEnvPrefix("YAFGO"),

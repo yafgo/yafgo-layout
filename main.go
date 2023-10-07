@@ -1,8 +1,6 @@
 package main
 
-import (
-	"yafgo/yafgo-layout/cmd"
-)
+import "yafgo/yafgo-layout/pkg/app"
 
 //go:generate swag fmt
 //go:generate swag init --parseInternal --parseDepth=10 -o ./resource/docs -ot "go,json"
@@ -27,5 +25,6 @@ import (
 //	@name						Authorization
 //	@description				接口请求token, 格式: `Bearer {token}`
 func main() {
-	cmd.RunApp()
+	bs := app.Bootstrap()
+	bs.Run()
 }

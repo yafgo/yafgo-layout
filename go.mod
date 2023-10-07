@@ -13,6 +13,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/golang-migrate/migrate/v4 v4.16.2
 	github.com/google/uuid v1.3.0
+	github.com/google/wire v0.5.0
 	github.com/gookit/color v1.5.3
 	github.com/imroc/req/v3 v3.42.0
 	github.com/pkg/errors v0.9.1

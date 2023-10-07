@@ -9,53 +9,40 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type SubCommand struct {
-	Cmd       *cobra.Command
-	IsDefault bool
-}
+type bootstrap struct {
+	app *application
 
-type application struct {
-	mode string // dev, prod, ...
-
+	mode        string // dev, prod, ...
+	mutex       sync.Mutex
 	initialized bool
 	rootCmd     *cobra.Command
-	subCommands []SubCommand
-
-	// 前置执行
-	PreRun func()
+	subCommands []subCommand
 }
 
-var (
-	appInst *application
-	appOnce sync.Once
-	appMu   sync.Mutex
-)
+func Bootstrap() *bootstrap {
+	return new(bootstrap)
+}
 
 // Run 执行cmd
-func (app *application) Run() {
-	appMu.Lock()
-	if app.initialized {
+func (bs *bootstrap) Run() {
+	bs.mutex.Lock()
+	if bs.initialized {
 		log.Fatalln("The App is already running...")
-		appMu.Unlock()
+		bs.mutex.Unlock()
 		return
 	}
-	app.initialize()
-	appMu.Unlock()
+	bs.initialize()
+	bs.mutex.Unlock()
 
 	// 执行主命令
-	if err := app.rootCmd.Execute(); err != nil {
+	if err := bs.rootCmd.Execute(); err != nil {
 		log.Fatalf("Failed to run app with %v: %+v\n", os.Args, err)
 	}
 }
 
-// AddSubCommand 注册子命令
-func (app *application) AddSubCommand(subCmd ...SubCommand) {
-	app.subCommands = append(app.subCommands, subCmd...)
-}
-
 // initialize 初始化
-func (app *application) initialize() *application {
-	app.rootCmd = &cobra.Command{
+func (bs *bootstrap) initialize() *bootstrap {
+	bs.rootCmd = &cobra.Command{
 		Use:   "yafgo",
 		Short: "yafgo",
 		Long:  `You can use "-h" flag to see all subcommands`,
@@ -63,17 +50,21 @@ func (app *application) initialize() *application {
 		// rootCmd 的所有子命令都会执行以下前置代码
 		PersistentPreRun: func(command *cobra.Command, args []string) {
 			// [前置执行] 这里已经可以获取到命令行参数了
-			if app.PreRun != nil {
-				app.PreRun()
+			app, _, err := newApp(bs.mode)
+			if err != nil {
+				fmt.Printf("failed to create app: %s\n", err)
+				os.Exit(2)
 			}
+			bs.app = app
 		},
 	}
 
-	var rootCmd = app.rootCmd
+	var rootCmd = bs.rootCmd
 	var cmdDefault *cobra.Command
 
 	// 注册子命令
-	for _, v := range app.subCommands {
+	bs.registerSubCommand()
+	for _, v := range bs.subCommands {
 		if v.Cmd != nil {
 			rootCmd.AddCommand(v.Cmd)
 			if v.IsDefault && cmdDefault == nil {
@@ -85,29 +76,29 @@ func (app *application) initialize() *application {
 
 	// 配置默认命令
 	if cmdDefault != nil {
-		app.registerDefaultCmd(cmdDefault)
+		bs.registerDefaultCmd(cmdDefault)
 	}
 
 	// 注册全局选项
-	app.registerGlobalFlags()
+	bs.registerGlobalFlags()
 
-	app.initialized = true
-	return app
+	bs.initialized = true
+	return bs
 }
 
 // registerGlobalFlags 注册全局选项（flag）
-func (app *application) registerGlobalFlags() {
-	var rootCmd = app.rootCmd
-	rootCmd.PersistentFlags().StringVarP(&app.mode, "mode", "m", "dev", "Set app mode, eg: dev, prod...")
+func (bs *bootstrap) registerGlobalFlags() {
+	var rootCmd = bs.rootCmd
+	rootCmd.PersistentFlags().StringVarP(&bs.mode, "conf", "c", "dev", "Set app config, eg: dev, prod...")
 }
 
 // registerDefaultCmd 注册默认命令
-func (app *application) registerDefaultCmd(subCmd *cobra.Command) {
+func (bs *bootstrap) registerDefaultCmd(subCmd *cobra.Command) {
 	firstArg := firstElement(os.Args[1:])
 	if firstArg == "-h" || firstArg == "--help" {
 		return
 	}
-	rootCmd := app.rootCmd
+	rootCmd := bs.rootCmd
 	cmd, _, err := rootCmd.Find(os.Args[1:])
 	if err == nil && cmd.Use == rootCmd.Use {
 		args := append([]string{subCmd.Use}, os.Args[1:]...)

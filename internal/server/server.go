@@ -9,20 +9,27 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-	"yafgo/yafgo-layout/internal/g"
 	httppkg "yafgo/yafgo-layout/pkg/http"
+	"yafgo/yafgo-layout/pkg/sys/ycfg"
+	"yafgo/yafgo-layout/pkg/sys/ylog"
 
 	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 )
 
-type webService struct{}
-
-func NewWebService() *webService {
-	return &webService{}
+type WebService struct {
+	logger *ylog.Logger
+	cfg    *ycfg.Config
 }
 
-func (s *webService) CmdRun(cmd *cobra.Command, args []string) {
+func NewWebService(logger *ylog.Logger, cfg *ycfg.Config) *WebService {
+	return &WebService{
+		logger: logger,
+		cfg:    cfg,
+	}
+}
+
+func (s *WebService) CmdRun(cmd *cobra.Command, args []string) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
@@ -50,8 +57,9 @@ func (s *webService) CmdRun(cmd *cobra.Command, args []string) {
 }
 
 // RunWebServer 启动 web server
-func (s *webService) RunWebServer(ctx context.Context) {
-	cfg := g.Cfg()
+func (s *WebService) RunWebServer(ctx context.Context) {
+	// cfg := g.Cfg()
+	cfg := s.cfg
 	isProd := cfg.GetString("env") == "prod"
 	port := cfg.GetInt("http.port")
 	addr := fmt.Sprintf(":%d", port)
