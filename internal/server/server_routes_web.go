@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func registerRoutesWeb(router *gin.Engine) {
+func (s *WebService) registerRoutesWeb(router *gin.Engine) {
 
 	rWeb := router.Group("/")
 

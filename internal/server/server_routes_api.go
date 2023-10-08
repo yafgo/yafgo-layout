@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func registerRoutesApi(router *gin.Engine) {
+func (s *WebService) registerRoutesApi(router *gin.Engine) {
 
 	rApi := router.Group("/api")
 

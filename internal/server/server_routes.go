@@ -1,6 +1,7 @@
 package server
 
 import (
+	"strings"
 	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/internal/middleware"
 	"yafgo/yafgo-layout/resource/docs"
@@ -10,34 +11,33 @@ import (
 	ginswagger "github.com/swaggo/gin-swagger"
 )
 
-func registerRoutes(router *gin.Engine) {
-	// 注册全局中间件
-	registerGlobalMiddleware(router)
-
-	router.GET("", func(ctx *gin.Context) {
-		appname := g.AppName()
-		ctx.JSON(200, gin.H{"Hello": appname})
-	})
+func (s *WebService) registerRoutes(router *gin.Engine) {
 
 	// 静态文件
 	router.StaticFile("/favicon.ico", "resource/public/favicon.ico")
 	router.Static("/static", "public/static/")
 
-	// api 路由
-	registerRoutesApi(router)
+	// 根路由
+	router.GET("", func(ctx *gin.Context) {
+		appname := g.AppName()
+		ctx.JSON(200, gin.H{"Hello": appname})
+	})
 
 	// web 路由
-	registerRoutesWeb(router)
+	s.registerRoutesWeb(router)
+
+	// api 路由
+	s.registerRoutesApi(router)
 
 	// swagger
-	handleSwagger(router)
+	s.handleSwagger(router)
 
 	// 处理 404
 	router.NoRoute(handle404)
 }
 
 // handleSwagger 启用 swagger
-func handleSwagger(router *gin.Engine) {
+func (s *WebService) handleSwagger(router *gin.Engine) {
 	apiGroup := router.Group("/api/docs")
 
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
@@ -50,4 +50,16 @@ func handleSwagger(router *gin.Engine) {
 		swaggerfiles.Handler,
 		ginswagger.PersistAuthorization(true),
 	))
+}
+
+func handle404(c *gin.Context) {
+	acceptString := c.Request.Header.Get("Accept")
+	if strings.Contains(acceptString, "text/html") {
+		// c.String(404, "404")
+	} else {
+		c.JSON(404, gin.H{
+			"code":    404,
+			"message": "路由未定义",
+		})
+	}
 }
