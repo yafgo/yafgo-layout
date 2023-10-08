@@ -27,7 +27,8 @@ func newApp(envConf string) (*application, func(), error) {
 	repositoryRepository := repository.NewRepository(db, client, query, logger)
 	userRepository := repository.NewUserRepository(repositoryRepository)
 	userService := service.NewUserService(serviceService, userRepository)
-	userHandler := handler.NewUserHandler(handlerHandler, userService)
+	jwt := newJwt(config)
+	userHandler := handler.NewUserHandler(handlerHandler, userService, jwt)
 	webService := server.NewWebService(logger, config, userHandler)
 	appApplication := newApplication(logger, config, webService)
 	return appApplication, func() {
@@ -46,6 +47,8 @@ var repositorySet = wire.NewSet(
 	newDB,
 	newGormQuery, repository.NewRepository, repository.NewUserRepository,
 )
+
+var jwtSet = wire.NewSet(newJwt)
 
 var yCfgSet = wire.NewSet(NewYCfg)
 

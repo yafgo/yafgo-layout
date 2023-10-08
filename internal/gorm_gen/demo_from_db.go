@@ -41,8 +41,8 @@ func init() {
 
 type userQuerier interface {
 	// where(id=@id)
-	GetByID(id uint64) (gen.T, error)
+	GetByID(id int64) (*gen.T, error)
 
 	// where(phone=@phone)
-	GetByPhone(phone string) (gen.T, error)
+	GetByPhone(phone string) (*gen.T, error)
 }

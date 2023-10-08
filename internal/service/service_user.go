@@ -1,8 +1,22 @@
 package service
 
-import "yafgo/yafgo-layout/internal/repository"
+import (
+	"context"
+	"yafgo/yafgo-layout/internal/model"
+	"yafgo/yafgo-layout/internal/repository"
+
+	"github.com/pkg/errors"
+)
+
+// ReqRegisterUsername 用户名注册
+type ReqRegisterUsername struct {
+	Username   string `json:"username,omitempty" binding:"required"`
+	Password   string `json:"password,omitempty" binding:"required"`
+	VerifyCode string `json:"verify_code,omitempty" binding:"required"`
+}
 
 type UserService interface {
+	RegisterByUsername(ctx context.Context, req *ReqRegisterUsername) (*model.User, error)
 }
 
 type userService struct {
@@ -15,4 +29,18 @@ func NewUserService(service *Service, userRepo repository.UserRepository) UserSe
 		userRepo: userRepo,
 		Service:  service,
 	}
+}
+
+// RegisterByUsername implements UserService.
+func (s *userService) RegisterByUsername(ctx context.Context, req *ReqRegisterUsername) (*model.User, error) {
+	user := &model.User{
+		Username: req.Username,
+		Password: req.Password,
+	}
+
+	if err := s.userRepo.Create(ctx, user); err != nil {
+		return nil, errors.Wrap(err, "创建用户失败")
+	}
+
+	return user, nil
 }

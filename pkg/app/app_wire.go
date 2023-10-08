@@ -31,6 +31,8 @@ var repositorySet = wire.NewSet(
 	repository.NewUserRepository,
 )
 
+var jwtSet = wire.NewSet(newJwt)
+
 var yCfgSet = wire.NewSet(NewYCfg)
 
 var yLogSet = wire.NewSet(NewYLog)
@@ -42,6 +44,7 @@ func newApp(envConf string) (app *application, cleanUp func(), err error) {
 		handlerSet,
 		serviceSet,
 		repositorySet,
+		jwtSet,
 		yCfgSet,
 		yLogSet,
 	))

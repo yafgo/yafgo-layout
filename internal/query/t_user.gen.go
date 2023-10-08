@@ -195,12 +195,12 @@ type IUserDo interface {
 	UnderlyingDB() *gorm.DB
 	schema.Tabler
 
-	GetByID(id uint64) (result model.User, err error)
-	GetByPhone(phone string) (result model.User, err error)
+	GetByID(id int64) (result *model.User, err error)
+	GetByPhone(phone string) (result *model.User, err error)
 }
 
 // where(id=@id)
-func (u userDo) GetByID(id uint64) (result model.User, err error) {
+func (u userDo) GetByID(id int64) (result *model.User, err error) {
 	var params []interface{}
 
 	var generateSQL strings.Builder
@@ -215,7 +215,7 @@ func (u userDo) GetByID(id uint64) (result model.User, err error) {
 }
 
 // where(phone=@phone)
-func (u userDo) GetByPhone(phone string) (result model.User, err error) {
+func (u userDo) GetByPhone(phone string) (result *model.User, err error) {
 	var params []interface{}
 
 	var generateSQL strings.Builder

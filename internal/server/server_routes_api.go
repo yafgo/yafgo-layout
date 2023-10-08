@@ -27,10 +27,9 @@ func (s *WebService) registerRoutesApi(router *gin.Engine) {
 		}
 
 		// auth
-		authC := new(v1.AuthController)
 		{
-			rV1.POST("/auth/register/username", authC.RegisterByUsername)
-			rV1.POST("/auth/login/username", authC.LoginByUsername)
+			rV1.POST("/auth/register/username", s.userHandler.RegisterByUsername)
+			rV1.POST("/auth/login/username", s.userHandler.LoginByUsername)
 		}
 	}
 }
