@@ -8,7 +8,10 @@ package app
 
 import (
 	"github.com/google/wire"
+	"yafgo/yafgo-layout/internal/handler"
+	"yafgo/yafgo-layout/internal/repository"
 	"yafgo/yafgo-layout/internal/server"
+	"yafgo/yafgo-layout/internal/service"
 )
 
 // Injectors from app_wire.go:
@@ -16,13 +19,31 @@ import (
 func newApp(envConf string) (*application, func(), error) {
 	config := NewYCfg(envConf)
 	logger := NewYLog(config)
-	webService := server.NewWebService(logger, config)
-	application := newApplication(logger, config, webService)
-	return application, func() {
+	handlerHandler := handler.NewHandler(logger)
+	serviceService := service.NewService(logger)
+	db := newDB(config, logger)
+	client := newRedis(config)
+	repositoryRepository := repository.NewRepository(db, client, logger)
+	userRepository := repository.NewUserRepository(repositoryRepository)
+	userService := service.NewUserService(serviceService, userRepository)
+	userHandler := handler.NewUserHandler(handlerHandler, userService)
+	webService := server.NewWebService(logger, config, userHandler)
+	appApplication := newApplication(logger, config, webService)
+	return appApplication, func() {
 	}, nil
 }
 
 // app_wire.go:
+
+var handlerSet = wire.NewSet(handler.NewHandler, handler.NewUserHandler)
+
+var serviceSet = wire.NewSet(service.NewService, service.NewUserService)
+
+var repositorySet = wire.NewSet(
+	newRedis,
+	newDB,
+	newGormQuery, repository.NewRepository, repository.NewUserRepository,
+)
 
 var yCfgSet = wire.NewSet(NewYCfg)
 

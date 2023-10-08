@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	"yafgo/yafgo-layout/internal/handler"
 	httppkg "yafgo/yafgo-layout/pkg/http"
 	"yafgo/yafgo-layout/pkg/sys/ycfg"
 	"yafgo/yafgo-layout/pkg/sys/ylog"
@@ -20,12 +21,22 @@ import (
 type WebService struct {
 	logger *ylog.Logger
 	cfg    *ycfg.Config
+
+	// handler
+	userHandler handler.UserHandler
 }
 
-func NewWebService(logger *ylog.Logger, cfg *ycfg.Config) *WebService {
+func NewWebService(
+	logger *ylog.Logger,
+	cfg *ycfg.Config,
+	userHandler handler.UserHandler,
+) *WebService {
 	return &WebService{
 		logger: logger,
 		cfg:    cfg,
+
+		// handler
+		userHandler: userHandler,
 	}
 }
 
