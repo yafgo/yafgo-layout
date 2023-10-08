@@ -8,7 +8,7 @@ import (
 func newJwt(cfg *ycfg.Config) *jwtutil.JwtUtil {
 	j := jwtutil.NewJWT(
 		jwtutil.WithSignKey(cfg.GetString("jwt.sign_key")),
-		// jwtutil.WithIssuer(AppName()),
+		jwtutil.WithIssuer(cfg.GetString("appname")),
 	)
 	return j
 }

@@ -6,7 +6,7 @@ import (
 	"yafgo/yafgo-layout/internal/model"
 	"yafgo/yafgo-layout/pkg/database"
 	"yafgo/yafgo-layout/pkg/hash"
-	"yafgo/yafgo-layout/pkg/jwt"
+	"yafgo/yafgo-layout/pkg/jwtutil"
 
 	"github.com/gin-gonic/gin"
 )
@@ -46,7 +46,7 @@ func (ctrl *AuthController) LoginByUsername(c *gin.Context) {
 	}
 
 	// 颁发jwtToken
-	token, err := g.Jwt().IssueToken(jwt.CustomClaims{UserID: user.ID})
+	token, err := g.Jwt().IssueToken(jwtutil.CustomClaims{UserID: user.ID})
 	if err != nil {
 		ctrl.Error(c, err, "生成token失败")
 		return
@@ -90,7 +90,7 @@ func (ctrl *AuthController) RegisterByUsername(c *gin.Context) {
 	}
 
 	// 颁发jwtToken
-	token, err := g.Jwt().IssueToken(jwt.CustomClaims{UserID: user.ID})
+	token, err := g.Jwt().IssueToken(jwtutil.CustomClaims{UserID: user.ID})
 	if err != nil {
 		ctrl.Error(c, err, "生成token失败")
 		return

@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 	"strconv"
-	"yafgo/yafgo-layout/pkg/jwt"
+	"yafgo/yafgo-layout/pkg/jwtutil"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,7 +12,7 @@ import (
 //
 //	abort: 默认为 true, 验证不通过会 Abort 当前请求并返回 401 错误;
 //	为 false 时，验证不通过会返回错误信息，并不会终止请求, 仅仅做了 jwt 解析, 主要用于并不需要必须登录但是又需要解析 token 中用户信息的接口
-func JWTAuth(j *jwt.JWT, abort ...bool) gin.HandlerFunc {
+func JWTAuth(j *jwtutil.JwtUtil, abort ...bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 这里 jwt 鉴权从标头 Authorization:Bearer xxxxx 中获取信息，并验证 JWT 的准确性
 		// 登录时回返回token信息,前端需要把token存储到cookie或者本地localStorage中 不过需要跟后端协商过期时间 可以约定刷新令牌或者重新登录
@@ -24,7 +24,7 @@ func JWTAuth(j *jwt.JWT, abort ...bool) gin.HandlerFunc {
 				return
 			} else {
 				// abort 不传或传true的情况
-				if err == jwt.ErrTokenExpired {
+				if err == jwtutil.ErrTokenExpired {
 					unauthorized(c, "授权已过期")
 					c.Abort()
 					return
