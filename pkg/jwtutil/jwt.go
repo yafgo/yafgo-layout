@@ -1,5 +1,5 @@
-// Package jwt 处理 JWT 认证
-package jwt
+// Package jwtutil 处理 JWT 认证
+package jwtutil
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"yafgo/yafgo-layout/pkg/sys/ylog"
 
 	"github.com/gin-gonic/gin"
-	jwtpkg "github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 var (
@@ -28,8 +28,8 @@ var (
 	defaultIssuer     string        = "yafgo"            // Token 的发行者
 )
 
-// JWT 定义一个jwt对象
-type JWT struct {
+// JwtUtil 自定义一个jwt对象
+type JwtUtil struct {
 	// 秘钥，用以加密 JWT
 	signKey []byte
 
@@ -56,22 +56,22 @@ type _FinalClaims struct {
 	// - aud (audience)：观众，相当于接受者
 	// - nbf (Not Before)：生效时间
 	// - jti (JWT ID)：编号
-	jwtpkg.RegisteredClaims
+	jwt.RegisteredClaims
 
 	// 自定义载荷
 	CustomClaims
 }
 
 // ParserToken 解析 Token
-func (jwt *JWT) ParserToken(tokenStr string) (*CustomClaims, error) {
+func (ju *JwtUtil) ParserToken(tokenStr string) (*CustomClaims, error) {
 
 	// 1. 解析用户传参的 Token
-	token, err := jwt.parseTokenString(tokenStr)
+	token, err := ju.parseTokenString(tokenStr)
 
 	// 2. 解析出错
 	if err != nil {
 		switch err {
-		case jwtpkg.ErrTokenExpired:
+		case jwt.ErrTokenExpired:
 			return nil, ErrTokenExpired
 		default:
 			return nil, ErrTokenInvalid
@@ -88,25 +88,25 @@ func (jwt *JWT) ParserToken(tokenStr string) (*CustomClaims, error) {
 }
 
 // ParserTokenFromHeader 从请求头直接解析 Token
-func (jwt *JWT) ParserTokenFromHeader(c *gin.Context) (*CustomClaims, error) {
-	tokenStr, err := jwt.GetTokenFromHeader(c)
+func (ju *JwtUtil) ParserTokenFromHeader(c *gin.Context) (*CustomClaims, error) {
+	tokenStr, err := ju.GetTokenFromHeader(c)
 	if err != nil {
 		return nil, err
 	}
 
-	return jwt.ParserToken(tokenStr)
+	return ju.ParserToken(tokenStr)
 }
 
 // RefreshToken 更新 Token，用以提供 refresh token 接口
-func (jwt *JWT) RefreshToken(tokenOld string) (tokenNew string, err error) {
+func (ju *JwtUtil) RefreshToken(tokenOld string) (tokenNew string, err error) {
 
 	// 1. 解析用户传参的 Token
-	token, err := jwt.parseTokenString(tokenOld)
+	token, err := ju.parseTokenString(tokenOld)
 
 	// 2. 解析出错，未报错证明是合法的 Token（甚至未到过期时间）
 	if err != nil {
 		// 满足 refresh 的条件：只是单一的报错token过期 ErrTokenExpired
-		if errors.Is(err, jwtpkg.ErrTokenExpired) {
+		if errors.Is(err, jwt.ErrTokenExpired) {
 			return "", err
 		}
 	}
@@ -115,48 +115,48 @@ func (jwt *JWT) RefreshToken(tokenOld string) (tokenNew string, err error) {
 	claims := token.Claims.(*_FinalClaims)
 
 	// 4. 检查是否过了『最大允许刷新的时间』
-	x := TimenowInTimezone().Add(-jwt.maxRefresh)
+	x := TimenowInTimezone().Add(-ju.maxRefresh)
 	if claims.IssuedAt.After(x) {
 		// 修改过期时间
-		claims.RegisteredClaims.ExpiresAt = jwt.newExpiresAt()
-		return jwt.createToken(*claims)
+		claims.RegisteredClaims.ExpiresAt = ju.newExpiresAt()
+		return ju.createToken(*claims)
 	}
 
 	return "", ErrTokenExpiredMaxRefresh
 }
 
 // RefreshTokenFromHeader 从请求头直接解析并刷新 Token
-func (jwt *JWT) RefreshTokenFromHeader(c *gin.Context) (tokenNew string, err error) {
-	tokenOld, err := jwt.GetTokenFromHeader(c)
+func (ju *JwtUtil) RefreshTokenFromHeader(c *gin.Context) (tokenNew string, err error) {
+	tokenOld, err := ju.GetTokenFromHeader(c)
 	if err != nil {
 		return "", err
 	}
 
-	return jwt.RefreshToken(tokenOld)
+	return ju.RefreshToken(tokenOld)
 }
 
 // IssueToken 颁发Token，一般在登录成功时调用
-func (jwt *JWT) IssueToken(claims CustomClaims) (token string, err error) {
+func (ju *JwtUtil) IssueToken(claims CustomClaims) (token string, err error) {
 
 	// 1. 构造用户 claims 信息(负荷)
-	expiresAt := jwt.newExpiresAt()
-	issuedAt := jwtpkg.NewNumericDate(TimenowInTimezone())
+	expiresAt := ju.newExpiresAt()
+	issuedAt := jwt.NewNumericDate(TimenowInTimezone())
 
 	finalClaims := _FinalClaims{
-		RegisteredClaims: jwtpkg.RegisteredClaims{
-			Issuer:    jwt.issuer,            // 签名颁发者
-			Subject:   "",                    //
-			Audience:  jwtpkg.ClaimStrings{}, //
-			ExpiresAt: expiresAt,             // 签名过期时间
-			NotBefore: issuedAt,              // 签名生效时间
-			IssuedAt:  issuedAt,              // 首次签名时间（后续刷新 Token 不会更新该字段）
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    ju.issuer,          // 签名颁发者
+			Subject:   "",                 //
+			Audience:  jwt.ClaimStrings{}, //
+			ExpiresAt: expiresAt,          // 签名过期时间
+			NotBefore: issuedAt,           // 签名生效时间
+			IssuedAt:  issuedAt,           // 首次签名时间（后续刷新 Token 不会更新该字段）
 		},
 		// 自定义载荷
 		CustomClaims: claims,
 	}
 
 	// 2. 根据 claims 生成token对象
-	token, err = jwt.createToken(finalClaims)
+	token, err = ju.createToken(finalClaims)
 	if err != nil {
 		ylog.Error(context.Background(), err)
 	}
@@ -165,30 +165,30 @@ func (jwt *JWT) IssueToken(claims CustomClaims) (token string, err error) {
 }
 
 // createToken 创建 Token，内部使用，外部请调用 IssueToken
-func (jwt *JWT) createToken(claims _FinalClaims) (string, error) {
+func (ju *JwtUtil) createToken(claims _FinalClaims) (string, error) {
 	// 使用HS256算法进行t生成
-	t := jwtpkg.NewWithClaims(jwtpkg.SigningMethodHS256, claims)
-	return t.SignedString(jwt.signKey)
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return t.SignedString(ju.signKey)
 }
 
 // newExpiresAt 过期时间
-func (jwt *JWT) newExpiresAt() *jwtpkg.NumericDate {
+func (ju *JwtUtil) newExpiresAt() *jwt.NumericDate {
 	timenow := TimenowInTimezone()
 
-	return jwtpkg.NewNumericDate(timenow.Add(jwt.expiresIn))
+	return jwt.NewNumericDate(timenow.Add(ju.expiresIn))
 }
 
-// parseTokenString 使用 jwtpkg.ParseWithClaims 解析 Token
-func (jwt *JWT) parseTokenString(tokenString string) (*jwtpkg.Token, error) {
-	return jwtpkg.ParseWithClaims(tokenString, &_FinalClaims{}, func(token *jwtpkg.Token) (interface{}, error) {
-		return jwt.signKey, nil
+// parseTokenString 使用 jwt.ParseWithClaims 解析 Token
+func (ju *JwtUtil) parseTokenString(tokenString string) (*jwt.Token, error) {
+	return jwt.ParseWithClaims(tokenString, &_FinalClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return ju.signKey, nil
 	})
 }
 
 // GetTokenFromHeader 从请求头获取 jwtToken 字符串
 //
 //	请求头示例: "Authorization:Bearer {jwtToken字符串}"
-func (jwt *JWT) GetTokenFromHeader(c *gin.Context) (string, error) {
+func (ju *JwtUtil) GetTokenFromHeader(c *gin.Context) (string, error) {
 	authHeader := c.Request.Header.Get("Authorization")
 	if authHeader == "" {
 		return "", ErrHeaderEmpty

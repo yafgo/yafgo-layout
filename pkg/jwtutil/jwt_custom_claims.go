@@ -1,4 +1,4 @@
-package jwt
+package jwtutil
 
 // CustomClaims 自定义载荷
 //

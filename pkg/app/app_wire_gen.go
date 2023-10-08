@@ -27,8 +27,8 @@ func newApp(envConf string) (*application, func(), error) {
 	repositoryRepository := repository.NewRepository(db, client, query, logger)
 	userRepository := repository.NewUserRepository(repositoryRepository)
 	userService := service.NewUserService(serviceService, userRepository)
-	jwt := newJwt(config)
-	userHandler := handler.NewUserHandler(handlerHandler, userService, jwt)
+	jwtUtil := newJwt(config)
+	userHandler := handler.NewUserHandler(handlerHandler, userService, jwtUtil)
 	webService := server.NewWebService(logger, config, userHandler)
 	appApplication := newApplication(logger, config, webService)
 	return appApplication, func() {

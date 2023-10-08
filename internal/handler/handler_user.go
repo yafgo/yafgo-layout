@@ -2,7 +2,7 @@ package handler
 
 import (
 	"yafgo/yafgo-layout/internal/service"
-	"yafgo/yafgo-layout/pkg/jwt"
+	"yafgo/yafgo-layout/pkg/jwtutil"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,19 +20,19 @@ type userHandler struct {
 	*Handler
 	userService service.UserService
 
-	j *jwt.JWT
+	ju *jwtutil.JwtUtil
 }
 
 func NewUserHandler(
 	handler *Handler,
 	userService service.UserService,
-	j *jwt.JWT,
+	ju *jwtutil.JwtUtil,
 ) UserHandler {
 	return &userHandler{
 		Handler:     handler,
 		userService: userService,
 
-		j: j,
+		ju: ju,
 	}
 }
 
@@ -60,7 +60,7 @@ func (h *userHandler) RegisterByUsername(ctx *gin.Context) {
 	}
 
 	// 颁发jwtToken
-	token, err := h.j.IssueToken(jwt.CustomClaims{UserID: user.ID})
+	token, err := h.ju.IssueToken(jwtutil.CustomClaims{UserID: user.ID})
 	if err != nil {
 		h.Error(ctx, err, "生成token失败")
 		return
