@@ -1,7 +1,6 @@
 package app
 
 import (
-	"yafgo/yafgo-layout/cmd/play"
 	"yafgo/yafgo-layout/internal/gorm_gen"
 	"yafgo/yafgo-layout/pkg/migration"
 
@@ -35,10 +34,10 @@ func (bs *bootstrap) registerSubCommand() {
 	})
 
 	// 用于play演示的命令
-	bs.addSubCommand(subCommand{
+	/* bs.addSubCommand(subCommand{
 		Cmd:       play.PlayCommand(),
 		IsDefault: false,
-	})
+	}) */
 
 	// gorm相关命令
 	bs.addCmdGORM()
