@@ -14,7 +14,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func newDB(cfg *ycfg.Config, lg *ylog.Logger) *gorm.DB {
+func NewDB(cfg *ycfg.Config, lg *ylog.Logger) *gorm.DB {
 	gormLogger := logger.NewGormLogger(lg)
 	db, err := database.NewGormMysql(cfg, gormLogger)
 	if err != nil {
@@ -23,12 +23,12 @@ func newDB(cfg *ycfg.Config, lg *ylog.Logger) *gorm.DB {
 	return db
 }
 
-func newGormQuery(db *gorm.DB) *query.Query {
+func NewGormQuery(db *gorm.DB) *query.Query {
 	query.SetDefault(db)
 	return query.Q
 }
 
-func newRedis(cfg *ycfg.Config) *redis.Client {
+func NewRedis(cfg *ycfg.Config) *redis.Client {
 	subCfg := cfg.Sub("redis.default")
 	if subCfg == nil {
 		panic("初始化redis出错, redis.default 配置不存在")
@@ -50,7 +50,7 @@ func newRedis(cfg *ycfg.Config) *redis.Client {
 	return rdb
 }
 
-func newCache(cfg *ycfg.Config) cache.Store {
+func NewCache(cfg *ycfg.Config) cache.Store {
 	subCfg := cfg.Sub("redis.cache")
 	if subCfg == nil {
 		panic("初始化cache出错, redis.cache 配置不存在")

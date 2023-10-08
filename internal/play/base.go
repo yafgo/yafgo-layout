@@ -16,17 +16,17 @@ type Playground struct {
 	subCmds []*cobra.Command
 
 	// Playground 需要用到的外部组件
-	db     func() *gorm.DB
-	rdb    func() *redis.Client
-	q      func() *query.Query
-	logger func() *ylog.Logger
+	db     *gorm.DB
+	rdb    *redis.Client
+	q      *query.Query
+	logger *ylog.Logger
 }
 
 func NewPlayground(
-	db func() *gorm.DB,
-	rdb func() *redis.Client,
-	q func() *query.Query,
-	logger func() *ylog.Logger,
+	db *gorm.DB,
+	rdb *redis.Client,
+	q *query.Query,
+	logger *ylog.Logger,
 ) *Playground {
 	pg := &Playground{
 		db:     db,
@@ -34,7 +34,7 @@ func NewPlayground(
 		q:      q,
 		logger: logger,
 	}
-	pg.subCmds = make([]*cobra.Command, 10)
+	pg.subCmds = make([]*cobra.Command, 0, 10)
 	return pg
 }
 
@@ -43,6 +43,7 @@ func (p *Playground) PlayCommand() *cobra.Command {
 	playCmd := &cobra.Command{
 		Use:   "play",
 		Short: "A playground for testing",
+		Long:  `You can use "-h" flag to see all subcommands`,
 		Run:   p.runPlay,
 	}
 	p.addSubCommands()

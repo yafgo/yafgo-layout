@@ -25,15 +25,15 @@ var serviceSet = wire.NewSet(
 )
 
 var repositorySet = wire.NewSet(
-	newRedis,
-	newCache,
-	newDB,
-	newGormQuery,
+	NewRedis,
+	NewCache,
+	NewDB,
+	NewGormQuery,
 	repository.NewRepository,
 	repository.NewUserRepository,
 )
 
-var jwtSet = wire.NewSet(newJwt)
+var jwtSet = wire.NewSet(NewJwt)
 
 var yCfgSet = wire.NewSet(NewYCfg)
 

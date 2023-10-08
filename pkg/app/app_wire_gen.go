@@ -23,13 +23,13 @@ func newApp(envConf string) (*application, func(), error) {
 	webHandler := handler.NewWebHandler(handlerHandler)
 	indexHandler := handler.NewIndexHandler(handlerHandler)
 	serviceService := service.NewService(logger)
-	db := newDB(config, logger)
-	client := newRedis(config)
-	query := newGormQuery(db)
+	db := NewDB(config, logger)
+	client := NewRedis(config)
+	query := NewGormQuery(db)
 	repositoryRepository := repository.NewRepository(db, client, query, logger)
 	userRepository := repository.NewUserRepository(repositoryRepository)
 	userService := service.NewUserService(serviceService, userRepository)
-	jwtUtil := newJwt(config)
+	jwtUtil := NewJwt(config)
 	userHandler := handler.NewUserHandler(handlerHandler, userService, jwtUtil)
 	webService := server.NewWebService(logger, config, webHandler, indexHandler, userHandler)
 	appApplication := newApplication(logger, config, webService)
@@ -44,13 +44,13 @@ var handlerSet = wire.NewSet(handler.NewHandler, handler.NewWebHandler, handler.
 var serviceSet = wire.NewSet(service.NewService, service.NewUserService)
 
 var repositorySet = wire.NewSet(
-	newRedis,
-	newCache,
-	newDB,
-	newGormQuery, repository.NewRepository, repository.NewUserRepository,
+	NewRedis,
+	NewCache,
+	NewDB,
+	NewGormQuery, repository.NewRepository, repository.NewUserRepository,
 )
 
-var jwtSet = wire.NewSet(newJwt)
+var jwtSet = wire.NewSet(NewJwt)
 
 var yCfgSet = wire.NewSet(NewYCfg)
 
