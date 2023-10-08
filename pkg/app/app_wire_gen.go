@@ -23,7 +23,8 @@ func newApp(envConf string) (*application, func(), error) {
 	serviceService := service.NewService(logger)
 	db := newDB(config, logger)
 	client := newRedis(config)
-	repositoryRepository := repository.NewRepository(db, client, logger)
+	query := newGormQuery(db)
+	repositoryRepository := repository.NewRepository(db, client, query, logger)
 	userRepository := repository.NewUserRepository(repositoryRepository)
 	userService := service.NewUserService(serviceService, userRepository)
 	userHandler := handler.NewUserHandler(handlerHandler, userService)
@@ -41,6 +42,7 @@ var serviceSet = wire.NewSet(service.NewService, service.NewUserService)
 
 var repositorySet = wire.NewSet(
 	newRedis,
+	newCache,
 	newDB,
 	newGormQuery, repository.NewRepository, repository.NewUserRepository,
 )

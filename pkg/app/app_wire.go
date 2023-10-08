@@ -24,6 +24,7 @@ var serviceSet = wire.NewSet(
 
 var repositorySet = wire.NewSet(
 	newRedis,
+	newCache,
 	newDB,
 	newGormQuery,
 	repository.NewRepository,
