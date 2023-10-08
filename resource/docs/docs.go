@@ -27,11 +27,11 @@ const docTemplate = `{
                         "ApiToken": []
                     }
                 ],
-                "description": "Index Demo",
+                "description": "Api Root",
                 "tags": [
                     "API"
                 ],
-                "summary": "Index",
+                "summary": "ApiRoot",
                 "responses": {
                     "200": {
                         "description": "{\"code\": 200, \"data\": [...]}",
@@ -49,11 +49,11 @@ const docTemplate = `{
                         "ApiToken": []
                     }
                 ],
-                "description": "Index Demo",
+                "description": "Api Index Demo",
                 "tags": [
-                    "默认"
+                    "API"
                 ],
-                "summary": "Index",
+                "summary": "ApiIndex",
                 "responses": {
                     "200": {
                         "description": "{\"code\": 200, \"data\": [...]}",
