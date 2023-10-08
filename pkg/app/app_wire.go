@@ -14,6 +14,7 @@ import (
 
 var handlerSet = wire.NewSet(
 	handler.NewHandler,
+	handler.NewWebHandler,
 	handler.NewIndexHandler,
 	handler.NewUserHandler,
 )

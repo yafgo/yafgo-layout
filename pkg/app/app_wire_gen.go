@@ -20,6 +20,7 @@ func newApp(envConf string) (*application, func(), error) {
 	config := NewYCfg(envConf)
 	logger := NewYLog(config)
 	handlerHandler := handler.NewHandler(logger)
+	webHandler := handler.NewWebHandler(handlerHandler)
 	indexHandler := handler.NewIndexHandler(handlerHandler)
 	serviceService := service.NewService(logger)
 	db := newDB(config, logger)
@@ -30,7 +31,7 @@ func newApp(envConf string) (*application, func(), error) {
 	userService := service.NewUserService(serviceService, userRepository)
 	jwtUtil := newJwt(config)
 	userHandler := handler.NewUserHandler(handlerHandler, userService, jwtUtil)
-	webService := server.NewWebService(logger, config, indexHandler, userHandler)
+	webService := server.NewWebService(logger, config, webHandler, indexHandler, userHandler)
 	appApplication := newApplication(logger, config, webService)
 	return appApplication, func() {
 	}, nil
@@ -38,7 +39,7 @@ func newApp(envConf string) (*application, func(), error) {
 
 // app_wire.go:
 
-var handlerSet = wire.NewSet(handler.NewHandler, handler.NewIndexHandler, handler.NewUserHandler)
+var handlerSet = wire.NewSet(handler.NewHandler, handler.NewWebHandler, handler.NewIndexHandler, handler.NewUserHandler)
 
 var serviceSet = wire.NewSet(service.NewService, service.NewUserService)
 

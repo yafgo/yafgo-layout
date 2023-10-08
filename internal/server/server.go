@@ -11,6 +11,7 @@ type WebService struct {
 	cfg    *ycfg.Config
 
 	// handler
+	webHandler   handler.WebHandler
 	indexHandler handler.IndexHandler
 	userHandler  handler.UserHandler
 }
@@ -18,6 +19,7 @@ type WebService struct {
 func NewWebService(
 	logger *ylog.Logger,
 	cfg *ycfg.Config,
+	webHandler handler.WebHandler,
 	indexHandler handler.IndexHandler,
 	userHandler handler.UserHandler,
 ) *WebService {
@@ -26,6 +28,7 @@ func NewWebService(
 		cfg:    cfg,
 
 		// handler
+		webHandler:   webHandler,
 		indexHandler: indexHandler,
 		userHandler:  userHandler,
 	}

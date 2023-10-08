@@ -18,10 +18,7 @@ func (s *WebService) registerRoutes(router *gin.Engine) {
 	router.Static("/static", "public/static/")
 
 	// 根路由
-	router.GET("", func(ctx *gin.Context) {
-		appname := g.AppName()
-		ctx.JSON(200, gin.H{"Hello": appname})
-	})
+	router.GET("", s.webHandler.Root)
 
 	// web 路由
 	s.registerRoutesWeb(router)
