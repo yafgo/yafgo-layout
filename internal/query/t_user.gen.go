@@ -197,6 +197,7 @@ type IUserDo interface {
 
 	GetByID(id int64) (result *model.User, err error)
 	GetByPhone(phone string) (result *model.User, err error)
+	GetByUsername(username string) (result *model.User, err error)
 }
 
 // where(id=@id)
@@ -221,6 +222,21 @@ func (u userDo) GetByPhone(phone string) (result *model.User, err error) {
 	var generateSQL strings.Builder
 	params = append(params, phone)
 	generateSQL.WriteString("phone=? ")
+
+	var executeSQL *gorm.DB
+	executeSQL = u.UnderlyingDB().Where(generateSQL.String(), params...).Take(&result) // ignore_security_alert
+	err = executeSQL.Error
+
+	return
+}
+
+// where(username=@username)
+func (u userDo) GetByUsername(username string) (result *model.User, err error) {
+	var params []interface{}
+
+	var generateSQL strings.Builder
+	params = append(params, username)
+	generateSQL.WriteString("username=? ")
 
 	var executeSQL *gorm.DB
 	executeSQL = u.UnderlyingDB().Where(generateSQL.String(), params...).Take(&result) // ignore_security_alert

@@ -76,8 +76,42 @@ func (h *userHandler) RegisterByUsername(ctx *gin.Context) {
 }
 
 // LoginByUsername implements UserHandler.
+//
+//	@Summary		用户名登录
+//	@Description	用户名登录
+//	@Tags			Auth
+//	@Param			data	body		requests.ReqUsername	true	"请求参数"
+//	@Success		200		{object}	any						"{"code": 200, "data": [...]}"
+//	@Router			/v1/auth/login/username [post]
+//	@Security		ApiToken
 func (h *userHandler) LoginByUsername(ctx *gin.Context) {
-	panic("unimplemented")
+
+	reqData := new(service.ReqLoginUsername)
+	if err := ctx.ShouldBindJSON(&reqData); err != nil {
+		h.ParamError(ctx, err, "请求参数错误")
+		return
+	}
+
+	user, err := h.userService.LoginByUsername(ctx, reqData)
+	if err != nil {
+		h.Error(ctx, err, "登录失败")
+		return
+	}
+
+	// 颁发jwtToken
+	token, err := h.ju.IssueToken(jwtutil.CustomClaims{UserID: user.ID})
+	if err != nil {
+		h.Error(ctx, err, "生成token失败")
+		return
+	}
+
+	h.SuccessWithMsg(ctx, "登录成功", gin.H{
+		"token": token,
+		"user": gin.H{
+			"id":       user.ID,
+			"username": user.Username,
+		},
+	})
 }
 
 func (h *userHandler) Register(ctx *gin.Context) {

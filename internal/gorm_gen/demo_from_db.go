@@ -45,4 +45,7 @@ type userQuerier interface {
 
 	// where(phone=@phone)
 	GetByPhone(phone string) (*gen.T, error)
+
+	// where(username=@username)
+	GetByUsername(username string) (*gen.T, error)
 }

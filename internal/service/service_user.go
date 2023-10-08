@@ -4,6 +4,7 @@ import (
 	"context"
 	"yafgo/yafgo-layout/internal/model"
 	"yafgo/yafgo-layout/internal/repository"
+	"yafgo/yafgo-layout/pkg/hash"
 
 	"github.com/pkg/errors"
 )
@@ -15,8 +16,15 @@ type ReqRegisterUsername struct {
 	VerifyCode string `json:"verify_code,omitempty" binding:"required"`
 }
 
+// ReqLoginUsername 用户名登录
+type ReqLoginUsername struct {
+	Username string `json:"username,omitempty" binding:"required"`
+	Password string `json:"password,omitempty" binding:"required"`
+}
+
 type UserService interface {
 	RegisterByUsername(ctx context.Context, req *ReqRegisterUsername) (*model.User, error)
+	LoginByUsername(ctx context.Context, req *ReqLoginUsername) (*model.User, error)
 }
 
 type userService struct {
@@ -40,6 +48,20 @@ func (s *userService) RegisterByUsername(ctx context.Context, req *ReqRegisterUs
 
 	if err := s.userRepo.Create(ctx, user); err != nil {
 		return nil, errors.Wrap(err, "创建用户失败")
+	}
+
+	return user, nil
+}
+
+// LoginByUsername implements UserService.
+func (s *userService) LoginByUsername(ctx context.Context, req *ReqLoginUsername) (*model.User, error) {
+	user, err := s.userRepo.GetByUsername(ctx, req.Username)
+	if err != nil {
+		return nil, errors.Wrap(err, "用户不存在")
+	}
+
+	if !hash.BcryptCheck(req.Password, user.Password) {
+		return nil, errors.New("密码不正确")
 	}
 
 	return user, nil
