@@ -39,7 +39,7 @@ var yCfgSet = wire.NewSet(NewYCfg)
 
 var yLogSet = wire.NewSet(NewYLog)
 
-func newApp(envConf string) (app *application, cleanUp func(), err error) {
+func newApp(envConf string) (app *application, err error) {
 	panic(wire.Build(
 		newApplication,
 		server.NewWebService,

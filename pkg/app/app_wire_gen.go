@@ -16,7 +16,7 @@ import (
 
 // Injectors from app_wire.go:
 
-func newApp(envConf string) (*application, func(), error) {
+func newApp(envConf string) (*application, error) {
 	config := NewYCfg(envConf)
 	logger := NewYLog(config)
 	handlerHandler := handler.NewHandler(logger)
@@ -33,8 +33,7 @@ func newApp(envConf string) (*application, func(), error) {
 	userHandler := handler.NewUserHandler(handlerHandler, userService, jwtUtil)
 	webService := server.NewWebService(logger, config, webHandler, indexHandler, userHandler)
 	appApplication := newApplication(logger, config, webService)
-	return appApplication, func() {
-	}, nil
+	return appApplication, nil
 }
 
 // app_wire.go:

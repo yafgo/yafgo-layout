@@ -50,7 +50,7 @@ func (bs *bootstrap) initialize() *bootstrap {
 		// rootCmd 的所有子命令都会执行以下前置代码
 		PersistentPreRun: func(command *cobra.Command, args []string) {
 			// [前置执行] 这里已经可以获取到命令行参数了
-			app, _, err := newApp(bs.mode)
+			app, err := newApp(bs.mode)
 			if err != nil {
 				fmt.Printf("failed to create app: %s\n", err)
 				os.Exit(2)
