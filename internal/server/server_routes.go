@@ -41,7 +41,7 @@ func (s *WebService) handleSwagger(router *gin.Engine) {
 	if !g.IsDev() {
 		docs.SwaggerInfo.Schemes = []string{"https", "http"}
 		// 非开发环境启用 BasicAuth 验证
-		apiGroup.Use(middleware.BasicAuth("swagger"))
+		apiGroup.Use(middleware.BasicAuth(s.cfg)("swagger"))
 	}
 	apiGroup.GET("/*any", ginswagger.WrapHandler(
 		swaggerfiles.Handler,
