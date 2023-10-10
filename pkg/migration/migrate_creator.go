@@ -6,8 +6,7 @@ import (
 	"strings"
 	"time"
 	"yafgo/yafgo-layout/pkg/helper/file"
-
-	"github.com/spf13/viper"
+	"yafgo/yafgo-layout/pkg/sys/ycfg"
 )
 
 var migrateCfgKey = "data.migrate"
@@ -17,11 +16,17 @@ var migrateCfgDefault = map[string]any{
 }
 
 type MigrateCreator struct {
-	conf *viper.Viper
+	conf *ycfg.Config
+}
+
+func NewMigrateCreator(cfg *ycfg.Config) *MigrateCreator {
+	return &MigrateCreator{
+		conf: cfg,
+	}
 }
 
 // Create 创建一个 migration
-func (m MigrateCreator) Create(name string, table string, create bool) {
+func (m *MigrateCreator) Create(name string, table string, create bool) {
 	m.conf.SetDefault(migrateCfgKey, migrateCfgDefault)
 
 	// 获取所需 stub 文件
@@ -35,7 +40,7 @@ func (m MigrateCreator) Create(name string, table string, create bool) {
 }
 
 // getStub 获取 migration stub 文件
-func (m MigrateCreator) getStub(table string, create bool) (string, string) {
+func (m *MigrateCreator) getStub(table string, create bool) (string, string) {
 	if table == "" {
 		return "", ""
 	}
@@ -69,7 +74,7 @@ func (m MigrateCreator) getStub(table string, create bool) (string, string) {
 }
 
 // populateStub 替换 migration stub 中的占位符
-func (m MigrateCreator) populateStub(stub string, table string) string {
+func (m *MigrateCreator) populateStub(stub string, table string) string {
 	stub = strings.ReplaceAll(stub, "DummyDatabaseCharset", m.conf.GetString(migrateCfgKey+".charset"))
 
 	if table != "" {
@@ -80,7 +85,7 @@ func (m MigrateCreator) populateStub(stub string, table string) string {
 }
 
 // getPath 获取 migration 的完整路径
-func (m MigrateCreator) getPath(name string, category string) string {
+func (m *MigrateCreator) getPath(name string, category string) string {
 	pwd, _ := os.Getwd()
 
 	return filepath.Join(pwd, "migrations", time.Now().Format("20060102150405")+"_"+name+"."+category+".sql")

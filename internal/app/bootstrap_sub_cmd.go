@@ -40,16 +40,19 @@ func (bs *bootstrap) registerSubCommand() {
 	})
 
 	// gorm相关命令
-	bs.addCmdGORM()
+	bs.addSubCommand(subCommand{
+		Cmd:       bs.cmdGORM(),
+		IsDefault: false,
+	})
 
 	// 用于执行数据迁移的命令
 	bs.addSubCommand(subCommand{
-		Cmd:       migration.CmdMigration,
+		Cmd:       migration.NewMigrateCmd(bs.app.cfg),
 		IsDefault: false,
 	})
 }
 
-func (bs *bootstrap) addCmdGORM() {
+func (bs *bootstrap) cmdGORM() *cobra.Command {
 	// 用于执行数据迁移的命令
 	var subCmd = &cobra.Command{
 		Use:   "gorm",
@@ -64,10 +67,7 @@ func (bs *bootstrap) addCmdGORM() {
 		Run:   bs.runGormGen,
 	})
 
-	bs.addSubCommand(subCommand{
-		Cmd:       subCmd,
-		IsDefault: false,
-	})
+	return subCmd
 }
 
 func (bs *bootstrap) runGormGen(cmd *cobra.Command, args []string) {

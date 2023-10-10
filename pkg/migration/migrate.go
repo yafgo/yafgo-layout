@@ -3,6 +3,7 @@ package migration
 import (
 	"database/sql"
 	"errors"
+	"yafgo/yafgo-layout/pkg/sys/ycfg"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
@@ -13,21 +14,21 @@ import (
 	"github.com/spf13/viper"
 )
 
-var globalConf *viper.Viper
-
 func Setup(conf *viper.Viper) {
-	globalConf = conf
 }
 
 type migrator struct {
+	cfg *ycfg.Config
 }
 
-func NewMigrator() *migrator {
-	return &migrator{}
+func NewMigrator(cfg *ycfg.Config) *migrator {
+	return &migrator{
+		cfg: cfg,
+	}
 }
 
 func (p *migrator) getMigrate() (*migrate.Migrate, error) {
-	conf := globalConf
+	conf := p.cfg
 	tableMigrations := conf.GetString("data.migrate.table")
 	dsn := conf.GetString("data.mysql.default")
 	driver := conf.GetString(migrateCfgKey + ".driver")
@@ -125,7 +126,7 @@ func (p *migrator) MakeMigration(name string) error {
 	table, create := TableGuesser{}.Guess(name)
 
 	// 写入 migration 文件
-	MigrateCreator{globalConf}.Create(name, table, create)
+	NewMigrateCreator(p.cfg).Create(name, table, create)
 
 	color.Green.Printf("Created Migration: %s\n", name)
 	return nil
