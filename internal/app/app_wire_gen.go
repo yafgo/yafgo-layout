@@ -9,9 +9,11 @@ package app
 import (
 	"github.com/google/wire"
 	"yafgo/yafgo-layout/internal/handler"
+	"yafgo/yafgo-layout/internal/play"
 	"yafgo/yafgo-layout/internal/repository"
 	"yafgo/yafgo-layout/internal/server"
 	"yafgo/yafgo-layout/internal/service"
+	"yafgo/yafgo-layout/pkg/notify"
 )
 
 // Injectors from app_wire.go:
@@ -32,11 +34,15 @@ func newApp(envConf string) (*application, error) {
 	jwtUtil := NewJwt(config)
 	userHandler := handler.NewUserHandler(handlerHandler, userService, jwtUtil)
 	webService := server.NewWebService(logger, config, webHandler, indexHandler, userHandler)
-	appApplication := newApplication(logger, config, webService)
+	feishuRobot := notify.NewFeishu(logger, config)
+	playground := play.NewPlayground(db, client, query, logger, feishuRobot)
+	appApplication := newApplication(logger, config, webService, playground)
 	return appApplication, nil
 }
 
 // app_wire.go:
+
+var playgroundSet = wire.NewSet(play.NewPlayground)
 
 var handlerSet = wire.NewSet(handler.NewHandler, handler.NewWebHandler, handler.NewIndexHandler, handler.NewUserHandler)
 
@@ -48,6 +54,8 @@ var repositorySet = wire.NewSet(
 	NewDB,
 	NewGormQuery, repository.NewRepository, repository.NewUserRepository,
 )
+
+var notifySet = wire.NewSet(notify.NewFeishu)
 
 var jwtSet = wire.NewSet(NewJwt)
 

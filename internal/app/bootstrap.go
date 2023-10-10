@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"sync"
@@ -12,7 +11,7 @@ import (
 type bootstrap struct {
 	app *application
 
-	mode        string // dev, prod, ...
+	envConf     string // dev, prod, ...
 	mutex       sync.Mutex
 	initialized bool
 	rootCmd     *cobra.Command
@@ -42,6 +41,16 @@ func (bs *bootstrap) Run() {
 
 // initialize 初始化
 func (bs *bootstrap) initialize() *bootstrap {
+	// 前置解析配置名
+	bs.parseConfigFlag()
+	app, err := newApp(bs.envConf)
+	if err != nil {
+		log.Printf("failed to create app: %s\n", err)
+		os.Exit(2)
+	}
+	bs.app = app
+
+	// 开始正式解析命令参数
 	bs.rootCmd = &cobra.Command{
 		Use:   "yafgo",
 		Short: "yafgo",
@@ -50,26 +59,18 @@ func (bs *bootstrap) initialize() *bootstrap {
 		// rootCmd 的所有子命令都会执行以下前置代码
 		PersistentPreRun: func(command *cobra.Command, args []string) {
 			// [前置执行] 这里已经可以获取到命令行参数了
-			app, err := newApp(bs.mode)
-			if err != nil {
-				fmt.Printf("failed to create app: %s\n", err)
-				os.Exit(2)
-			}
-			bs.app = app
 		},
 	}
 
-	var rootCmd = bs.rootCmd
-	var cmdDefault *cobra.Command
-
 	// 注册子命令
 	bs.registerSubCommand()
+	var cmdDefault *cobra.Command
 	for _, v := range bs.subCommands {
 		if v.Cmd != nil {
-			rootCmd.AddCommand(v.Cmd)
+			bs.rootCmd.AddCommand(v.Cmd)
 			if v.IsDefault && cmdDefault == nil {
 				cmdDefault = v.Cmd
-				rootCmd.Long = fmt.Sprintf(`Default will run "%s" command, you can use "-h" flag to see all subcommands`, cmdDefault.Use)
+				bs.rootCmd.Long = `Default will run "` + cmdDefault.Use + `" command, you can use "-h" flag to see all subcommands`
 			}
 		}
 	}
@@ -86,10 +87,25 @@ func (bs *bootstrap) initialize() *bootstrap {
 	return bs
 }
 
+// parseConfigFlag 前置解析 configName
+func (bs *bootstrap) parseConfigFlag() {
+	// 正式 rootCmd 之前的仅负责解析配置参数的 cobra 实例
+	var preCmd = &cobra.Command{}
+
+	// 禁用 -h 标志的响应
+	preCmd.SetHelpFunc(func(c *cobra.Command, s []string) {})
+
+	// 解析配置参数
+	preCmd.PersistentFlags().StringVarP(&bs.envConf, "conf", "c", "dev", "ConfigName: dev, prod...")
+
+	// 执行主命令(这里忽略Execute的错误)
+	preCmd.Execute()
+}
+
 // registerGlobalFlags 注册全局选项（flag）
 func (bs *bootstrap) registerGlobalFlags() {
 	var rootCmd = bs.rootCmd
-	rootCmd.PersistentFlags().StringVarP(&bs.mode, "conf", "c", "dev", "Set app config, eg: dev, prod...")
+	rootCmd.PersistentFlags().StringVarP(&bs.envConf, "conf", "c", "dev", "Set app config, eg: dev, prod...")
 }
 
 // registerDefaultCmd 注册默认命令

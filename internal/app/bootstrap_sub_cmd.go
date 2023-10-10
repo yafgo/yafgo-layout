@@ -34,10 +34,10 @@ func (bs *bootstrap) registerSubCommand() {
 	})
 
 	// 用于play演示的命令
-	/* bs.addSubCommand(subCommand{
-		Cmd:       play.PlayCommand(),
+	bs.addSubCommand(subCommand{
+		Cmd:       bs.app.playground.PlayCommand(),
 		IsDefault: false,
-	}) */
+	})
 
 	// gorm相关命令
 	bs.addCmdGORM()

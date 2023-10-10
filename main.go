@@ -1,6 +1,8 @@
 package main
 
-import "yafgo/yafgo-layout/internal/app"
+import (
+	"yafgo/yafgo-layout/internal/app"
+)
 
 //go:generate swag fmt
 //go:generate swag init --parseInternal --parseDepth=10 -o ./resource/docs -ot "go,json"
