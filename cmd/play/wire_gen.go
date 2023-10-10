@@ -9,8 +9,8 @@ package main
 import (
 	"github.com/google/wire"
 	"path/filepath"
+	"yafgo/yafgo-layout/internal/app"
 	"yafgo/yafgo-layout/internal/play"
-	"yafgo/yafgo-layout/pkg/app"
 	"yafgo/yafgo-layout/pkg/notify"
 	"yafgo/yafgo-layout/pkg/sys/ycfg"
 )

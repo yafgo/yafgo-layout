@@ -4,4 +4,4 @@ init:
 
 .PHONY: wire
 wire:
-	wire gen -output_file_prefix app_ ./pkg/app
+	wire gen -output_file_prefix app_ ./internal/app
