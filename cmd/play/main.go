@@ -3,13 +3,11 @@ package main
 import (
 	"log"
 	"os"
-	"path/filepath"
 )
 
 func main() {
 	pg := newPlay("dev")
 	rootCmd := pg.PlayCommand()
-	filepath.Join("../..")
 
 	// 执行 play 主命令
 	if err := rootCmd.Execute(); err != nil {

@@ -50,6 +50,9 @@ redis:
 
 # 飞书robot配置
 feishu:
-  # webhook完整地址: "https://open.feishu.cn/open-apis/bot/v2/hook/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-  # 或者仅最后的key: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-  default: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  # 内容前缀, 如: "[Yafgo Dev]"
+  prefix: ""
+  robot:
+    # webhook完整地址: "https://open.feishu.cn/open-apis/bot/v2/hook/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    # 或者仅最后的key: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    default: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"

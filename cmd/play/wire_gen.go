@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"yafgo/yafgo-layout/internal/play"
 	"yafgo/yafgo-layout/pkg/app"
+	"yafgo/yafgo-layout/pkg/notify"
 	"yafgo/yafgo-layout/pkg/sys/ycfg"
 )
 
@@ -22,13 +23,16 @@ func newPlay(envConf string) *play.Playground {
 	db := app.NewDB(config, logger)
 	client := app.NewRedis(config)
 	query := app.NewGormQuery(db)
-	playground := play.NewPlayground(db, client, query, logger)
+	feishuRobot := notify.NewFeishu(logger, config)
+	playground := play.NewPlayground(db, client, query, logger, feishuRobot)
 	return playground
 }
 
 // wire.go:
 
 var playgroundSet = wire.NewSet(play.NewPlayground)
+
+var notifySet = wire.NewSet(notify.NewFeishu)
 
 var dbSet = wire.NewSet(app.NewRedis, app.NewCache, app.NewDB, app.NewGormQuery)
 

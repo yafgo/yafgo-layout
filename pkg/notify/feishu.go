@@ -3,9 +3,9 @@ package notify
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"strings"
 	"time"
+	"yafgo/yafgo-layout/pkg/sys/ycfg"
 	"yafgo/yafgo-layout/pkg/sys/ylog"
 
 	"github.com/imroc/req/v3"
@@ -14,51 +14,74 @@ import (
 // H is a shortcut for map[string]interface{}
 type H map[string]any
 
-type feishuUtil struct {
-	appEnv   string
-	robotUrl string
+type FeishuRobot struct {
+	logger   *ylog.Logger
+	prefix   string // 消息前缀
+	robotUrl string // 默认robotUrl
 
-	// 其他字段
-	atAll bool // 是否 @所有人
+	// 消息队列
+	msgQueue chan *feishuMsg
+	msgQSize int
+
+	// 执行状态
+	running bool
 }
 
-type feishuMsg struct {
-	robotUrl string
-	body     any
-}
+// NewFeishu
+//
+//	appEnv: 环境, dev, prod 等
+//	robotUrl: 默认robot地址
+func NewFeishu(logger *ylog.Logger, cfg *ycfg.Config) *FeishuRobot {
+	fsRobot := new(FeishuRobot)
+	fsRobot.logger = logger
+	fsRobot.robotUrl = cfg.GetString("feishu.robot.default")
+	fsRobot.prefix = cfg.GetString("feishu.prefix")
 
-var feishuQueueSize = 3000
-var feishuMsgQueue = make(chan *feishuMsg, feishuQueueSize)
-
-func Stats() map[string]int {
-	queued := len(feishuMsgQueue)
-	return map[string]int{
-		"容量": feishuQueueSize,
-		"队列": queued,
-		"空闲": feishuQueueSize - queued,
+	if fsRobot.msgQSize <= 0 {
+		fsRobot.msgQSize = 10
 	}
+	fsRobot.msgQueue = make(chan *feishuMsg, fsRobot.msgQSize)
+	return fsRobot
 }
 
-func startFeishuMsgConsumer() {
+func (fr *FeishuRobot) New() *feishuMsg {
+	msg := new(feishuMsg)
+	msg.feishuRobot = fr
+	msg.robotUrl = fr.robotUrl
+	return msg
+}
+
+func (fr *FeishuRobot) startFeishuMsgConsumer() {
+	if fr.running {
+		return
+	}
+	fr.running = true
 	go func() {
-		ylog.Infof(context.Background(), "启动飞书队列")
-		for msg := range feishuMsgQueue {
+		fr.logger.Infof(context.Background(), "启动飞书队列")
+		for msg := range fr.msgQueue {
 			if msg == nil {
 				continue
 			}
 
-			go sendFeishuMsg(msg)
-			time.Sleep(time.Millisecond * 200)
+			go fr.doSendFeishuMsg(msg)
+			time.Sleep(time.Millisecond * 100)
 		}
 	}()
 }
 
+func (fr *FeishuRobot) send(msg *feishuMsg) {
+	if !fr.running {
+		fr.startFeishuMsgConsumer()
+	}
+	fr.msgQueue <- msg
+}
+
 // send 发送
-func sendFeishuMsg(msg *feishuMsg) (err error) {
+func (fr *FeishuRobot) doSendFeishuMsg(msg *feishuMsg) (err error) {
 	ctx := context.Background()
 	defer func() {
 		if rec := recover(); rec != nil {
-			ylog.Infof(ctx, "飞书消息发送错误defer: %+v", rec)
+			fr.logger.Infof(ctx, "飞书消息发送错误defer: %+v", rec)
 		}
 	}()
 
@@ -67,7 +90,7 @@ func sendFeishuMsg(msg *feishuMsg) (err error) {
 	}
 
 	if msg.robotUrl == "" {
-		ylog.Errorf(ctx, "飞书机器人 webhook URL 未配置")
+		fr.logger.Errorf(ctx, "飞书机器人 webhook URL 未配置")
 		return
 	}
 
@@ -78,7 +101,7 @@ func sendFeishuMsg(msg *feishuMsg) (err error) {
 	// 执行发送
 	jsonReq, err := json.Marshal(msg.body)
 	if err != nil {
-		ylog.Infof(ctx, "飞书消息发送错误1: %+v", err)
+		fr.logger.Infof(ctx, "飞书消息发送错误1: %+v", err)
 		return
 	}
 
@@ -88,107 +111,20 @@ func sendFeishuMsg(msg *feishuMsg) (err error) {
 		SetHeader("Content-Type", "application/json").
 		Post(msg.robotUrl)
 	if err != nil {
-		ylog.Infof(ctx, "飞书消息发送错误2: %+v", err)
+		fr.logger.Infof(ctx, "飞书消息发送错误2: %+v", err)
 		return
 	}
 	if resp.IsErrorState() {
-		ylog.Infof(ctx, "飞书消息发送失败, 响应:%s, 请求:%s", resp.String(), jsonReq)
+		fr.logger.Infof(ctx, "飞书消息发送失败, 响应:%s, 请求:%s", resp.String(), jsonReq)
 	}
 	return
 }
 
-var (
-	defaultAppEnv   string
-	defaultRobotUrl string
-	_sysName        string
-)
-
-// SetupFeishu 初始化飞书配置
-//
-//	robotUrl: 飞书机器人 webhook v2 地址, 也可以省略 url 前缀, 只写最后一段: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-func SetupFeishu(sysName, appEnv, robotUrl string) {
-	_sysName = sysName
-	defaultAppEnv = appEnv
-	defaultRobotUrl = robotUrl
-	startFeishuMsgConsumer()
-}
-
-func Feishu() (fsUtil *feishuUtil) {
-	fsUtil = new(feishuUtil)
-	fsUtil.appEnv = defaultAppEnv
-	fsUtil.robotUrl = defaultRobotUrl
-	return
-}
-
-// WithRobot 本次消息发给指定的飞书 robot
-func (p *feishuUtil) WithRobot(robotUrl string) *feishuUtil {
-	p.robotUrl = robotUrl
-	return p
-}
-
-// AtAll 本次消息@所有人
-func (p *feishuUtil) AtAll() *feishuUtil {
-	p.atAll = true
-	return p
-}
-
-// send 发送
-func (p *feishuUtil) send(body any) (err error) {
-	feishuMsgQueue <- &feishuMsg{p.robotUrl, body}
-	return
-}
-
-// SendText 发送文本消息
-//
-//	SendText("测试发送文本消息")
-//	SendText("测试发送文本消息: %s, %d", "张三", 18)
-func (p *feishuUtil) SendText(text string, a ...any) error {
-	if len(a) > 0 {
-		text = fmt.Sprintf(text, a...)
+func (fr *FeishuRobot) Stats() map[string]int {
+	queued := len(fr.msgQueue)
+	return map[string]int{
+		"容量": fr.msgQSize,
+		"队列": queued,
+		"空闲": fr.msgQSize - queued,
 	}
-	text = fmt.Sprintf("【%s】%s", p.appEnv, text)
-	if p.atAll {
-		text += ` <at user_id="all">所有人</at>`
-	}
-
-	// 发送数据
-	msgData := H{
-		"msg_type": "text",
-		"content": H{
-			"text": text,
-		},
-	}
-	return p.send(msgData)
-}
-
-// SendPost 发送富文本消息
-//
-//	SendPost("测试标题", "测试发送文本消息")
-//	SendPost("测试标题", "测试发送文本消息: %s, %d", "张三", 18)
-func (p *feishuUtil) SendPost(title string, text string, a ...any) error {
-	if len(a) > 0 {
-		text = fmt.Sprintf(text, a...)
-	}
-	title = fmt.Sprintf("【%s-%s】%s", _sysName, p.appEnv, title)
-	var content = []H{
-		{"tag": "text", "text": text},
-	}
-	if p.atAll {
-		content = append(content, H{"tag": "at", "user_id": "all"})
-	}
-	var contents = [][]H{content}
-
-	// 发送数据
-	msgData := H{
-		"msg_type": "post",
-		"content": H{
-			"post": H{
-				"zh_cn": H{
-					"title":   title,
-					"content": contents,
-				},
-			},
-		},
-	}
-	return p.send(msgData)
 }

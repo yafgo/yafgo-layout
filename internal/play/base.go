@@ -2,7 +2,9 @@ package play
 
 import (
 	"fmt"
+	"time"
 	"yafgo/yafgo-layout/internal/query"
+	"yafgo/yafgo-layout/pkg/notify"
 	"yafgo/yafgo-layout/pkg/sys/ylog"
 
 	"github.com/redis/go-redis/v9"
@@ -20,6 +22,7 @@ type Playground struct {
 	rdb    *redis.Client
 	q      *query.Query
 	logger *ylog.Logger
+	feishu *notify.FeishuRobot
 }
 
 func NewPlayground(
@@ -27,12 +30,14 @@ func NewPlayground(
 	rdb *redis.Client,
 	q *query.Query,
 	logger *ylog.Logger,
+	feishu *notify.FeishuRobot,
 ) *Playground {
 	pg := &Playground{
 		db:     db,
 		rdb:    rdb,
 		q:      q,
 		logger: logger,
+		feishu: feishu,
 	}
 	pg.subCmds = make([]*cobra.Command, 0, 10)
 	return pg
@@ -45,6 +50,9 @@ func (p *Playground) PlayCommand() *cobra.Command {
 		Short: "A playground for testing",
 		Long:  `You can use "-h" flag to see all subcommands`,
 		Run:   p.runPlay,
+		PersistentPostRun: func(cmd *cobra.Command, args []string) {
+			time.Sleep(time.Second * 1)
+		},
 	}
 	p.addSubCommands()
 	playCmd.AddCommand(p.subCmds...)
