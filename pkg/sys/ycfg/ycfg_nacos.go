@@ -9,6 +9,21 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/vo"
 )
 
+/*
+# config.yaml nacos 配置示例
+nacos:
+  dir_log: "./storage/tmp/nacos/log"
+  dir_cache: "./storage/tmp/nacos/cache"
+  config:
+    host: "127.0.0.1"
+    port: 8848
+    context_path: "/nacos"
+    namespace: "158dde6c-66e7-4107-a0bb-f879d02c767e"
+    log_level: "info"
+    data_id: "yafgo.yaml"
+    group: "DEFAULT_GROUP"
+*/
+
 // setupNacos 启用 Nacos 支持
 func (p *Config) setupNacos() (err error) {
 	nacosCfgKey := "nacos.config"

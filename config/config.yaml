@@ -66,3 +66,16 @@ feishu:
     # webhook完整地址: "https://open.feishu.cn/open-apis/bot/v2/hook/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     # 或者仅最后的key: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     default: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+# config.yaml nacos 配置示例
+# nacos:
+#   dir_log: "./storage/tmp/nacos/log"
+#   dir_cache: "./storage/tmp/nacos/cache"
+#   config:
+#     host: "127.0.0.1"
+#     port: 8848
+#     context_path: "/nacos"
+#     namespace: "158dde6c-66e7-4107-a0bb-f879d02c767e"
+#     log_level: "info"
+#     data_id: "yafgo.yaml"
+#     group: "DEFAULT_GROUP"
