@@ -4,6 +4,7 @@
 package app
 
 import (
+	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/internal/handler"
 	"yafgo/yafgo-layout/internal/play"
 	"yafgo/yafgo-layout/internal/repository"
@@ -41,6 +42,8 @@ var notifySet = wire.NewSet(
 	notify.NewFeishu,
 )
 
+var gSet = wire.NewSet(g.New)
+
 var jwtSet = wire.NewSet(NewJwt)
 
 var yCfgSet = wire.NewSet(NewYCfg)
@@ -56,6 +59,7 @@ func newApp(envConf string) (app *application, err error) {
 		serviceSet,
 		repositorySet,
 		notifySet,
+		gSet,
 		jwtSet,
 		yCfgSet,
 		yLogSet,

@@ -2,7 +2,6 @@ package server
 
 import (
 	"strings"
-	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/internal/middleware"
 	"yafgo/yafgo-layout/resource/docs"
 
@@ -38,7 +37,7 @@ func (s *WebService) handleSwagger(router *gin.Engine) {
 	apiGroup := router.Group("/api/docs")
 
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
-	if !g.IsDev() {
+	if !s.g.IsDev() {
 		docs.SwaggerInfo.Schemes = []string{"https", "http"}
 		// 非开发环境启用 BasicAuth 验证
 		apiGroup.Use(middleware.BasicAuth(s.cfg)("swagger"))

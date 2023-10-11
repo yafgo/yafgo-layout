@@ -6,38 +6,40 @@ import (
 	"yafgo/yafgo-layout/pkg/sys/ycfg"
 )
 
-// 全局 Cfg 对象
-var instCfg *ycfg.Config
+type GlobalObj struct {
+	cfg *ycfg.Config
+}
 
-// Cfg 获取全局 Cfg 对象
-func SetCfg(cfg *ycfg.Config) {
-	instCfg = cfg
+func New(cfg *ycfg.Config) *GlobalObj {
+	return &GlobalObj{
+		cfg: cfg,
+	}
 }
 
 // AppName 当前应用名, 用于log前缀等
-func AppName() string {
-	instCfg.SetDefault("appname", "YAFGO")
-	appname := instCfg.GetString("appname")
+func (g *GlobalObj) AppName() string {
+	g.cfg.SetDefault("appname", "YAFGO")
+	appname := g.cfg.GetString("appname")
 	return appname
 }
 
 // AppEnv 当前环境
-func AppEnv() string {
-	instCfg.SetDefault("env", "dev")
-	return instCfg.GetString("env")
+func (g *GlobalObj) AppEnv() string {
+	g.cfg.SetDefault("env", "dev")
+	return g.cfg.GetString("env")
 }
 
 // IsProd 是否生产环境
-func IsProd() bool {
-	return AppEnv() == "prod"
+func (g *GlobalObj) IsProd() bool {
+	return g.AppEnv() == "prod"
 }
 
 // IsDev 是否开发环境
-func IsDev() bool {
-	return AppEnv() == "dev"
+func (g *GlobalObj) IsDev() bool {
+	return g.AppEnv() == "dev"
 }
 
 // IsTest 是否测试环境
-func IsTest() bool {
-	return AppEnv() == "test"
+func (g *GlobalObj) IsTest() bool {
+	return g.AppEnv() == "test"
 }

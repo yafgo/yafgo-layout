@@ -8,6 +8,7 @@ package app
 
 import (
 	"github.com/google/wire"
+	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/internal/handler"
 	"yafgo/yafgo-layout/internal/play"
 	"yafgo/yafgo-layout/internal/repository"
@@ -21,6 +22,7 @@ import (
 func newApp(envConf string) (*application, error) {
 	config := NewYCfg(envConf)
 	logger := NewYLog(config)
+	globalObj := g.New(config)
 	handlerHandler := handler.NewHandler(logger)
 	webHandler := handler.NewWebHandler(handlerHandler)
 	indexHandler := handler.NewIndexHandler(handlerHandler)
@@ -33,7 +35,7 @@ func newApp(envConf string) (*application, error) {
 	userService := service.NewUserService(serviceService, userRepository)
 	jwtUtil := NewJwt(config)
 	userHandler := handler.NewUserHandler(handlerHandler, userService, jwtUtil)
-	webService := server.NewWebService(logger, config, webHandler, indexHandler, userHandler)
+	webService := server.NewWebService(logger, config, globalObj, webHandler, indexHandler, userHandler)
 	feishuRobot := notify.NewFeishu(logger, config)
 	playground := play.NewPlayground(db, client, query, logger, feishuRobot)
 	appApplication := newApplication(logger, config, webService, playground)
@@ -56,6 +58,8 @@ var repositorySet = wire.NewSet(
 )
 
 var notifySet = wire.NewSet(notify.NewFeishu)
+
+var gSet = wire.NewSet(g.New)
 
 var jwtSet = wire.NewSet(NewJwt)
 
