@@ -55,6 +55,7 @@ type ycfg struct {
 
 	shouldWatch  bool
 	unmarshalObj any
+	nacosEnabled bool // 是否启用nacos配置支持
 
 	configDirs []string
 }
@@ -79,6 +80,10 @@ func New(name string, opts ...ycfgOption) *Config {
 	}
 
 	var cfg = builder.setupConfig(name)
+	// 启用nacos配置支持
+	if builder.nacosEnabled {
+		cfg.setupNacos()
+	}
 	return cfg
 }
 
@@ -140,6 +145,13 @@ func WithUnmarshalObj(obj any) ycfgOption {
 func WithShouldWatch(flag bool) ycfgOption {
 	return func(p *ycfg) {
 		p.shouldWatch = flag
+	}
+}
+
+// WithNacosEnabled 是否启用nacos配置支持, 默认否
+func WithNacosEnabled(enable bool) ycfgOption {
+	return func(p *ycfg) {
+		p.nacosEnabled = enable
 	}
 }
 
