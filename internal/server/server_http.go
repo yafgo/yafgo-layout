@@ -49,7 +49,7 @@ func (s *WebService) CmdRun(cmd *cobra.Command, args []string) {
 
 // RunWebServer 启动 web server
 func (s *WebService) RunWebServer(ctx context.Context) {
-	isProd := s.cfg.GetString("env") == "prod"
+	isProd := s.g.IsProd()
 	port := s.cfg.GetInt("http.port")
 	addr := fmt.Sprintf(":%d", port)
 
