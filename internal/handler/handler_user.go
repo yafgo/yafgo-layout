@@ -18,21 +18,11 @@ type UserHandler interface {
 
 type userHandler struct {
 	*Handler
-	userService service.UserService
-
-	ju *jwtutil.JwtUtil
 }
 
-func NewUserHandler(
-	handler *Handler,
-	userService service.UserService,
-	ju *jwtutil.JwtUtil,
-) UserHandler {
+func NewUserHandler(handler *Handler) UserHandler {
 	return &userHandler{
-		Handler:     handler,
-		userService: userService,
-
-		ju: ju,
+		Handler: handler,
 	}
 }
 
@@ -41,8 +31,8 @@ func NewUserHandler(
 //	@Summary		用户名注册
 //	@Description	用户名注册
 //	@Tags			Auth
-//	@Param			data	body		requests.ReqUsernameRegister	true	"请求参数"
-//	@Success		200		{object}	any								"{"code": 200, "data": [...]}"
+//	@Param			data	body		service.ReqRegisterUsername	true	"请求参数"
+//	@Success		200		{object}	any							"{"code": 200, "data": [...]}"
 //	@Router			/v1/auth/register/username [post]
 //	@Security		ApiToken
 func (h *userHandler) RegisterByUsername(ctx *gin.Context) {
@@ -53,20 +43,20 @@ func (h *userHandler) RegisterByUsername(ctx *gin.Context) {
 		return
 	}
 
-	user, err := h.userService.RegisterByUsername(ctx, reqData)
+	user, err := h.svcUser.RegisterByUsername(ctx, reqData)
 	if err != nil {
-		h.Error(ctx, err, "注册失败")
+		h.Resp().ErrorWithMsg(ctx, "注册失败", err)
 		return
 	}
 
 	// 颁发jwtToken
-	token, err := h.ju.IssueToken(jwtutil.CustomClaims{UserID: user.ID})
+	token, err := h.jwt.IssueToken(jwtutil.CustomClaims{UserID: user.ID})
 	if err != nil {
-		h.Error(ctx, err, "生成token失败")
+		h.Resp().ErrorWithMsg(ctx, "生成token失败", err)
 		return
 	}
 
-	h.SuccessWithMsg(ctx, "注册成功", gin.H{
+	h.Resp().SuccessWithMsg(ctx, "注册成功", gin.H{
 		"token": token,
 		"user": gin.H{
 			"id":       user.ID,
@@ -80,8 +70,8 @@ func (h *userHandler) RegisterByUsername(ctx *gin.Context) {
 //	@Summary		用户名登录
 //	@Description	用户名登录
 //	@Tags			Auth
-//	@Param			data	body		requests.ReqUsername	true	"请求参数"
-//	@Success		200		{object}	any						"{"code": 200, "data": [...]}"
+//	@Param			data	body		service.ReqLoginUsername	true	"请求参数"
+//	@Success		200		{object}	any							"{"code": 200, "data": [...]}"
 //	@Router			/v1/auth/login/username [post]
 //	@Security		ApiToken
 func (h *userHandler) LoginByUsername(ctx *gin.Context) {
@@ -92,20 +82,20 @@ func (h *userHandler) LoginByUsername(ctx *gin.Context) {
 		return
 	}
 
-	user, err := h.userService.LoginByUsername(ctx, reqData)
+	user, err := h.svcUser.LoginByUsername(ctx, reqData)
 	if err != nil {
-		h.Error(ctx, err, "登录失败")
+		h.Resp().ErrorWithMsg(ctx, "登录失败", err)
 		return
 	}
 
 	// 颁发jwtToken
-	token, err := h.ju.IssueToken(jwtutil.CustomClaims{UserID: user.ID})
+	token, err := h.jwt.IssueToken(jwtutil.CustomClaims{UserID: user.ID})
 	if err != nil {
-		h.Error(ctx, err, "生成token失败")
+		h.Resp().ErrorWithMsg(ctx, "生成token失败", err)
 		return
 	}
 
-	h.SuccessWithMsg(ctx, "登录成功", gin.H{
+	h.Resp().SuccessWithMsg(ctx, "登录成功", gin.H{
 		"token": token,
 		"user": gin.H{
 			"id":       user.ID,

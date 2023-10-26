@@ -13,6 +13,7 @@ type WebService struct {
 	g      *g.GlobalObj
 
 	// handler
+	hdl          *handler.Handler
 	webHandler   handler.WebHandler
 	indexHandler handler.IndexHandler
 	userHandler  handler.UserHandler
@@ -22,9 +23,7 @@ func NewWebService(
 	logger *ylog.Logger,
 	cfg *ycfg.Config,
 	g *g.GlobalObj,
-	webHandler handler.WebHandler,
-	indexHandler handler.IndexHandler,
-	userHandler handler.UserHandler,
+	hdl *handler.Handler,
 ) *WebService {
 	return &WebService{
 		logger: logger,
@@ -32,8 +31,9 @@ func NewWebService(
 		g:      g,
 
 		// handler
-		webHandler:   webHandler,
-		indexHandler: indexHandler,
-		userHandler:  userHandler,
+		hdl:          hdl,
+		webHandler:   handler.NewWebHandler(hdl),
+		indexHandler: handler.NewIndexHandler(hdl),
+		userHandler:  handler.NewUserHandler(hdl),
 	}
 }

@@ -1,20 +1,34 @@
 package service
 
 import (
+	"yafgo/yafgo-layout/internal/query"
+	"yafgo/yafgo-layout/pkg/jwtutil"
 	"yafgo/yafgo-layout/pkg/sys/ylog"
+
+	"github.com/redis/go-redis/v9"
+	"gorm.io/gorm"
 )
 
 type Service struct {
 	logger *ylog.Logger
-	// jwt    *jwt.JWT
+	jwt    *jwtutil.JwtUtil
+	db     *gorm.DB
+	rdb    *redis.Client
+	q      *query.Query
 }
 
 func NewService(
 	logger *ylog.Logger,
-	// jwt *jwt.JWT,
+	jwt *jwtutil.JwtUtil,
+	db *gorm.DB,
+	rdb *redis.Client,
+	q *query.Query,
 ) *Service {
 	return &Service{
 		logger: logger,
-		// jwt:    jwt,
+		jwt:    jwt,
+		db:     db,
+		rdb:    rdb,
+		q:      q,
 	}
 }

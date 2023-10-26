@@ -79,7 +79,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/requests.ReqUsername"
+                            "$ref": "#/definitions/service.ReqLoginUsername"
                         }
                     }
                 ],
@@ -112,7 +112,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/requests.ReqUsernameRegister"
+                            "$ref": "#/definitions/service.ReqRegisterUsername"
                         }
                     }
                 ],
@@ -128,7 +128,7 @@
         }
     },
     "definitions": {
-        "requests.ReqUsername": {
+        "service.ReqLoginUsername": {
             "type": "object",
             "required": [
                 "password",
@@ -140,13 +140,10 @@
                 },
                 "username": {
                     "type": "string"
-                },
-                "verify_code": {
-                    "type": "string"
                 }
             }
         },
-        "requests.ReqUsernameRegister": {
+        "service.ReqRegisterUsername": {
             "type": "object",
             "required": [
                 "password",

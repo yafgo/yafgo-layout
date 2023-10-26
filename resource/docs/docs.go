@@ -83,7 +83,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/requests.ReqUsername"
+                            "$ref": "#/definitions/service.ReqLoginUsername"
                         }
                     }
                 ],
@@ -116,7 +116,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/requests.ReqUsernameRegister"
+                            "$ref": "#/definitions/service.ReqRegisterUsername"
                         }
                     }
                 ],
@@ -132,7 +132,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "requests.ReqUsername": {
+        "service.ReqLoginUsername": {
             "type": "object",
             "required": [
                 "password",
@@ -144,13 +144,10 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
-                },
-                "verify_code": {
-                    "type": "string"
                 }
             }
         },
-        "requests.ReqUsernameRegister": {
+        "service.ReqRegisterUsername": {
             "type": "object",
             "required": [
                 "password",

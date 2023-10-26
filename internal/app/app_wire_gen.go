@@ -23,19 +23,16 @@ func newApp(envConf string) (*application, error) {
 	config := NewYCfg(envConf)
 	logger := NewYLog(config)
 	globalObj := g.New(config)
-	handlerHandler := handler.NewHandler(logger)
-	webHandler := handler.NewWebHandler(handlerHandler)
-	indexHandler := handler.NewIndexHandler(handlerHandler)
-	serviceService := service.NewService(logger)
+	jwtUtil := NewJwt(config)
 	db := NewDB(config, logger)
 	client := NewRedis(config)
 	query := NewGormQuery(db)
+	serviceService := service.NewService(logger, jwtUtil, db, client, query)
 	repositoryRepository := repository.NewRepository(db, client, query, logger)
 	userRepository := repository.NewUserRepository(repositoryRepository)
 	userService := service.NewUserService(serviceService, userRepository)
-	jwtUtil := NewJwt(config)
-	userHandler := handler.NewUserHandler(handlerHandler, userService, jwtUtil)
-	webService := server.NewWebService(logger, config, globalObj, webHandler, indexHandler, userHandler)
+	handlerHandler := handler.NewHandler(logger, globalObj, jwtUtil, userService)
+	webService := server.NewWebService(logger, config, globalObj, handlerHandler)
 	feishuRobot := notify.NewFeishu(logger, config)
 	playground := play.NewPlayground(db, client, query, logger, feishuRobot)
 	appApplication := newApplication(logger, config, webService, playground)
@@ -46,7 +43,7 @@ func newApp(envConf string) (*application, error) {
 
 var playgroundSet = wire.NewSet(play.NewPlayground)
 
-var handlerSet = wire.NewSet(handler.NewHandler, handler.NewWebHandler, handler.NewIndexHandler, handler.NewUserHandler)
+var handlerSet = wire.NewSet(handler.NewHandler)
 
 var serviceSet = wire.NewSet(service.NewService, service.NewUserService)
 

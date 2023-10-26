@@ -30,7 +30,7 @@ func NewIndexHandler(
 //	@Router			/ [get]
 //	@Security		ApiToken
 func (h *indexHandler) Root(ctx *gin.Context) {
-	h.Success(ctx, gin.H{
+	h.Resp().Success(ctx, gin.H{
 		"data": "/api/",
 	})
 }
@@ -44,7 +44,7 @@ func (h *indexHandler) Root(ctx *gin.Context) {
 //	@Router			/v1/ [get]
 //	@Security		ApiToken
 func (h *indexHandler) Index(ctx *gin.Context) {
-	h.Success(ctx, gin.H{
+	h.Resp().Success(ctx, gin.H{
 		"data": "/api/v1/",
 	})
 }

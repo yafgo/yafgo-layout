@@ -19,9 +19,6 @@ var playgroundSet = wire.NewSet(play.NewPlayground)
 
 var handlerSet = wire.NewSet(
 	handler.NewHandler,
-	handler.NewWebHandler,
-	handler.NewIndexHandler,
-	handler.NewUserHandler,
 )
 
 var serviceSet = wire.NewSet(
