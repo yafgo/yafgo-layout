@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"net/http"
-	"strconv"
 	"yafgo/yafgo-layout/pkg/jwtutil"
 
 	"github.com/gin-gonic/gin"
@@ -37,8 +36,6 @@ func JWTAuth(j *jwtutil.JwtUtil, abort ...bool) gin.HandlerFunc {
 
 		// 将用户信息存入 gin.context 里，后续 auth 包将从这里拿到当前用户数据
 		c.Set("claims", claims)
-		c.Set("current_user_id", claims.UserID)
-		c.Set("current_user_id_str", strconv.FormatInt(claims.UserID, 10))
 
 		// c.Next()
 	}

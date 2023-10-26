@@ -25,6 +25,7 @@ type ReqLoginUsername struct {
 type UserService interface {
 	RegisterByUsername(ctx context.Context, req *ReqRegisterUsername) (*model.User, error)
 	LoginByUsername(ctx context.Context, req *ReqLoginUsername) (*model.User, error)
+	GetByID(ctx context.Context, id int64) (*model.User, error)
 }
 
 type userService struct {
@@ -65,4 +66,9 @@ func (s *userService) LoginByUsername(ctx context.Context, req *ReqLoginUsername
 	}
 
 	return user, nil
+}
+
+// GetByID implements UserService.
+func (s *userService) GetByID(ctx context.Context, id int64) (*model.User, error) {
+	return s.userRepo.GetByID(ctx, id)
 }
