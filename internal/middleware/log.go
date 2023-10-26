@@ -16,8 +16,9 @@ func Logger() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 		// req_id 存到 ctx 中
-		trace := hash.Md5(hash.GenUUID())
-		ctx.Set("reqid", trace)
+		traceID := hash.GenGUID()
+		ctx.Set("reqid", traceID)
+		ctx.Header("X-Reqid", traceID)
 
 		// request info
 		headers := ctx.Request.Header.Clone()
@@ -37,7 +38,8 @@ func Logger() gin.HandlerFunc {
 			ctx.Request.Body = io.NopCloser(bytes.NewBuffer(reqBody))
 			reqLogFields = append(reqLogFields, ylog.Any("req_params", string(reqBody)))
 		}
-		// ylog.With(reqLogFields...).Info(ctx, "Request")
+		// 记录请求
+		ylog.With(reqLogFields...).Info(ctx, "Request")
 
 		// 记录耗时
 		t1 := time.Now()
