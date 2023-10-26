@@ -1,0 +1,35 @@
+package handler
+
+import (
+	"github.com/gin-gonic/gin"
+)
+
+type {{CamelName}}Handler interface {
+	Action(ctx *gin.Context)
+}
+
+type {{SnakeName}}Handler struct {
+	*Handler
+}
+
+func New{{CamelName}}Handler(
+	handler *Handler,
+) {{CamelName}}Handler {
+	return &{{SnakeName}}Handler{
+		Handler: handler,
+	}
+}
+
+// Action implements {{CamelName}}Handler.
+//
+//	@Summary		ApiRoot
+//	@Description	Api Root
+//	@Tags			API
+//	@Success		200	{object}	any	"{"code": 200, "data": [...]}"
+//	@Router			/ [get]
+//	@Security		ApiToken
+func (h *{{SnakeName}}Handler) Action(ctx *gin.Context) {
+	h.Resp().Success(ctx, gin.H{
+		"data": "/api/",
+	})
+}

@@ -2,6 +2,7 @@ package app
 
 import (
 	"yafgo/yafgo-layout/internal/gorm_gen"
+	"yafgo/yafgo-layout/internal/make"
 	"yafgo/yafgo-layout/pkg/migration"
 
 	"github.com/gookit/color"
@@ -42,6 +43,12 @@ func (bs *bootstrap) registerSubCommand() {
 	// gorm相关命令
 	bs.addSubCommand(subCommand{
 		Cmd:       bs.cmdGORM(),
+		IsDefault: false,
+	})
+
+	// 用于执行代码生成的命令
+	bs.addSubCommand(subCommand{
+		Cmd:       make.CmdMake,
 		IsDefault: false,
 	})
 
