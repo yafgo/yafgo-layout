@@ -15,70 +15,70 @@ type subCommand struct {
 }
 
 // addSubCommand 注册子命令
-func (bs *bootstrap) addSubCommand(subCmd ...subCommand) {
-	bs.subCommands = append(bs.subCommands, subCmd...)
+func (app *application) addSubCommand(subCmd ...subCommand) {
+	app.subCommands = append(app.subCommands, subCmd...)
 }
 
 // registerSubCommand 注册子命令
-func (bs *bootstrap) registerSubCommand() {
+func (app *application) registerSubCommand() {
 	// web 服务
-	bs.addSubCommand(subCommand{
+	app.addSubCommand(subCommand{
 		Cmd: &cobra.Command{
 			Use:   "serve",
 			Short: "Run WebServer",
 			Args:  cobra.NoArgs,
 			Run: func(cmd *cobra.Command, args []string) {
-				bs.app.webService.CmdRun(cmd, args)
+				app.webService.CmdRun(cmd, args)
 			},
 		},
 		IsDefault: true,
 	})
 
 	// 用于play演示的命令
-	bs.addSubCommand(subCommand{
-		Cmd:       bs.app.playground.PlayCommand(),
+	app.addSubCommand(subCommand{
+		Cmd:       app.playground.PlayCommand(),
 		IsDefault: false,
 	})
 
 	// gorm相关命令
-	bs.addSubCommand(subCommand{
-		Cmd:       bs.cmdGORM(),
+	app.addSubCommand(subCommand{
+		Cmd:       app.cmdGORM(),
 		IsDefault: false,
 	})
 
 	// 用于执行代码生成的命令
-	bs.addSubCommand(subCommand{
+	app.addSubCommand(subCommand{
 		Cmd:       make.CmdMake,
 		IsDefault: false,
 	})
 
 	// 用于执行数据迁移的命令
-	bs.addSubCommand(subCommand{
-		Cmd:       migration.NewMigrateCmd(bs.app.cfg),
+	app.addSubCommand(subCommand{
+		Cmd:       migration.NewMigrateCmd(app.cfg),
 		IsDefault: false,
 	})
 }
 
-func (bs *bootstrap) cmdGORM() *cobra.Command {
+func (app *application) cmdGORM() *cobra.Command {
 	// 用于执行数据迁移的命令
 	var subCmd = &cobra.Command{
 		Use:   "gorm",
 		Short: "Gorm Tools, Generate Gorm models & queries",
 		Args:  cobra.NoArgs,
-		Run:   bs.runGormGen,
+		Run:   app.runGormGen,
 	}
 	subCmd.AddCommand(&cobra.Command{
 		Use:   "gen",
 		Short: "Generate Gorm models & queries",
 		Args:  cobra.NoArgs,
-		Run:   bs.runGormGen,
+		Run:   app.runGormGen,
 	})
 
 	return subCmd
 }
 
-func (bs *bootstrap) runGormGen(cmd *cobra.Command, args []string) {
+func (app *application) runGormGen(cmd *cobra.Command, args []string) {
 	color.Successln("Run gorm_gen...")
-	dsn := bs.app.cfg.GetString("data.mysql.default")
+	dsn := app.cfg.GetString("data.mysql.default")
 	gorm_gen.RunGenerate(dsn)
 }

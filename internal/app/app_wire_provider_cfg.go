@@ -12,3 +12,9 @@ func NewYCfg(envConf string) (cfg *ycfg.Config) {
 	)
 	return
 }
+
+func NewYCfgDig(envConf string) func() *ycfg.Config {
+	return func() (cfg *ycfg.Config) {
+		return NewYCfg(envConf)
+	}
+}

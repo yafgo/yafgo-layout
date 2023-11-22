@@ -27,6 +27,5 @@ import (
 //	@name						Authorization
 //	@description				接口请求token, 格式: `Bearer {token}`
 func main() {
-	bs := app.Bootstrap()
-	bs.Run()
+	app.NewApp().Run()
 }
