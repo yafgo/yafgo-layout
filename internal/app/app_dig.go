@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/internal/handler"
 	"yafgo/yafgo-layout/internal/play"
@@ -56,9 +57,12 @@ func NewAppDig(envConf string) (app *application) {
 
 	// 主应用
 	container.Provide(newApplication)
-	container.Invoke(func(_app *application) {
+	err := container.Invoke(func(_app *application) {
 		app = _app
 	})
+	if err != nil {
+		fmt.Printf("err: %+v", err)
+	}
 
 	return
 }
