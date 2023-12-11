@@ -76,6 +76,7 @@ func (m *MigrateCreator) getStub(table string, create bool) (string, string) {
 // populateStub 替换 migration stub 中的占位符
 func (m *MigrateCreator) populateStub(stub string, table string) string {
 	stub = strings.ReplaceAll(stub, "DummyDatabaseCharset", m.conf.GetString(migrateCfgKey+".charset"))
+	stub = strings.ReplaceAll(stub, "DummyDatabaseCollate", m.conf.GetString(migrateCfgKey+".collate"))
 
 	if table != "" {
 		stub = strings.ReplaceAll(stub, "DummyTable", table)

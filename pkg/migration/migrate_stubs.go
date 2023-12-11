@@ -1,37 +1,31 @@
 package migration
 
+import _ "embed"
+
 type MysqlStubs struct {
 }
 
+//go:embed stubs/mysql_create_up.sql
+var stubCreateUp string
+
 // CreateUp Create up migration content.
 func (receiver MysqlStubs) CreateUp() string {
-	return `CREATE TABLE DummyTable (
-  id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  created_at datetime(3) NOT NULL,
-  updated_at datetime(3) NOT NULL,
-  PRIMARY KEY (id),
-  KEY idx_DummyTable_created_at (created_at),
-  KEY idx_DummyTable_updated_at (updated_at)
-) ENGINE = InnoDB DEFAULT CHARSET = DummyDatabaseCharset;
-`
+	return stubCreateUp
 }
 
 // CreateDown Create down migration content.
 func (receiver MysqlStubs) CreateDown() string {
-	return `DROP TABLE IF EXISTS DummyTable;
-`
+	return "DROP TABLE IF EXISTS `t_DummyTable`;"
 }
 
 // UpdateUp Update up migration content.
 func (receiver MysqlStubs) UpdateUp() string {
-	return `ALTER TABLE DummyTable ADD column varchar(255) COMMENT '';
-`
+	return "ALTER TABLE `t_DummyTable` ADD column varchar(255) COMMENT '';"
 }
 
 // UpdateDown Update down migration content.
 func (receiver MysqlStubs) UpdateDown() string {
-	return `ALTER TABLE DummyTable DROP COLUMN column;
-`
+	return "ALTER TABLE `t_DummyTable` DROP COLUMN column;"
 }
 
 type PostgresqlStubs struct {
