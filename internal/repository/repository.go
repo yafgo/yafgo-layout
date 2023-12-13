@@ -9,10 +9,10 @@ import (
 )
 
 type Repository struct {
-	db     *gorm.DB
-	rdb    *redis.Client
-	q      *query.Query
-	logger *ylog.Logger
+	DB     *gorm.DB
+	Redis  *redis.Client
+	Q      *query.Query
+	Logger *ylog.Logger
 }
 
 func NewRepository(
@@ -22,9 +22,9 @@ func NewRepository(
 	logger *ylog.Logger,
 ) *Repository {
 	return &Repository{
-		db:     db,
-		rdb:    rdb,
-		q:      q,
-		logger: logger,
+		DB:     db,
+		Redis:  rdb,
+		Q:      q,
+		Logger: logger,
 	}
 }

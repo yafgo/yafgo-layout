@@ -13,16 +13,16 @@ type {{CamelName}}Handler interface {
 	Delete(ctx *gin.Context)
 }
 
-type {{LowerCamelName}}Handler struct {
-	*Handler
-}
-
 func New{{CamelName}}Handler(
 	handler *Handler,
 ) {{CamelName}}Handler {
 	return &{{LowerCamelName}}Handler{
 		Handler: handler,
 	}
+}
+
+type {{LowerCamelName}}Handler struct {
+	*Handler
 }
 
 // List implements {{CamelName}}Handler.

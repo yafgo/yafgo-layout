@@ -10,11 +10,11 @@ import (
 )
 
 type Service struct {
-	logger *ylog.Logger
-	jwt    *jwtutil.JwtUtil
-	db     *gorm.DB
-	rdb    *redis.Client
-	q      *query.Query
+	Logger *ylog.Logger
+	Jwt    *jwtutil.JwtUtil
+	DB     *gorm.DB
+	Redis  *redis.Client
+	Q      *query.Query
 }
 
 func NewService(
@@ -25,10 +25,10 @@ func NewService(
 	q *query.Query,
 ) *Service {
 	return &Service{
-		logger: logger,
-		jwt:    jwt,
-		db:     db,
-		rdb:    rdb,
-		q:      q,
+		Logger: logger,
+		Jwt:    jwt,
+		DB:     db,
+		Redis:  rdb,
+		Q:      q,
 	}
 }
