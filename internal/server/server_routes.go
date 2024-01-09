@@ -16,14 +16,10 @@ func (s *WebService) registerRoutes(router *gin.Engine) {
 	router.StaticFile("/favicon.ico", "resource/public/favicon.ico")
 	router.Static("/static", "public/static/")
 
-	// 根路由
-	router.GET("", s.webHandler.Root)
-
-	// web 路由
-	s.registerRoutesWeb(router)
-
-	// api 路由
-	s.registerRoutesApi(router)
+	// 前台路由
+	s.routerFrontend.Register(router)
+	// 后台路由
+	s.routerBackend.Register(router)
 
 	// swagger
 	s.handleSwagger(router)

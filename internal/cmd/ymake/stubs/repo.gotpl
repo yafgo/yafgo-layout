@@ -1,0 +1,26 @@
+package repository
+
+import (
+	"context"
+
+	"github.com/pkg/errors"
+)
+
+type {{.CamelName}}Repository interface {
+	GetByID(ctx context.Context, id int64) error
+}
+
+func New{{.CamelName}}Repository(r *Repository) {{.CamelName}}Repository {
+	return &{{.LowerCamelName}}Repository{
+		Repository: r,
+	}
+}
+
+type {{.LowerCamelName}}Repository struct {
+	*Repository
+}
+
+// GetByID implements {{.CamelName}}Repository.
+func (r *{{.LowerCamelName}}Repository) GetByID(ctx context.Context, id int64) error {
+	return errors.New("todo")
+}

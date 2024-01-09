@@ -3,6 +3,8 @@ package server
 import (
 	"yafgo/yafgo-layout/internal/g"
 	"yafgo/yafgo-layout/internal/handler"
+	"yafgo/yafgo-layout/internal/handler/backend"
+	"yafgo/yafgo-layout/internal/handler/frontend"
 	"yafgo/yafgo-layout/pkg/sys/ycfg"
 	"yafgo/yafgo-layout/pkg/sys/ylog"
 )
@@ -12,11 +14,9 @@ type WebService struct {
 	cfg    *ycfg.Config
 	g      *g.GlobalObj
 
-	// handler
-	hdl          *handler.Handler
-	webHandler   handler.WebHandler
-	indexHandler handler.IndexHandler
-	userHandler  handler.UserHandler
+	// 路由
+	routerBackend  *backend.Router
+	routerFrontend *frontend.Router
 }
 
 func NewWebService(
@@ -24,16 +24,17 @@ func NewWebService(
 	cfg *ycfg.Config,
 	g *g.GlobalObj,
 	hdl *handler.Handler,
+
+	routerBackend *backend.Router,
+	routerFrontend *frontend.Router,
 ) *WebService {
 	return &WebService{
 		logger: logger,
 		cfg:    cfg,
 		g:      g,
 
-		// handler
-		hdl:          hdl,
-		webHandler:   handler.NewWebHandler(hdl),
-		indexHandler: handler.NewIndexHandler(hdl),
-		userHandler:  handler.NewUserHandler(hdl),
+		// 路由
+		routerBackend:  routerBackend,
+		routerFrontend: routerFrontend,
 	}
 }

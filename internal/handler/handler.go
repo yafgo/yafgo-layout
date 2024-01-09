@@ -17,11 +17,11 @@ import (
 )
 
 type Handler struct {
-	logger *ylog.Logger
-	g      *g.GlobalObj
-	jwt    *jwtutil.JwtUtil
+	Logger *ylog.Logger
+	G      *g.GlobalObj
+	Jwt    *jwtutil.JwtUtil
 
-	svcUser service.UserService
+	SvcUser service.UserService
 }
 
 func NewHandler(
@@ -31,11 +31,11 @@ func NewHandler(
 	svcUser service.UserService,
 ) *Handler {
 	return &Handler{
-		logger: logger,
-		g:      g,
-		jwt:    jwt,
+		Logger: logger,
+		G:      g,
+		Jwt:    jwt,
 
-		svcUser: svcUser,
+		SvcUser: svcUser,
 	}
 }
 
@@ -46,7 +46,7 @@ func (h *Handler) JSON(ctx *gin.Context, data any) {
 
 // Resp 获取 API 响应处理实例
 func (h *Handler) Resp() *response.ApiResponse {
-	resp := response.New(h.g.IsDev())
+	resp := response.New(h.G.IsDev())
 	return resp
 }
 
@@ -99,10 +99,10 @@ func (h *Handler) CurrentUserIDStr(ctx *gin.Context) string {
 func (h *Handler) CurrentUser(ctx *gin.Context) (u *model.User, err error) {
 	uid := h.CurrentUserID(ctx)
 	if uid == 0 {
-		h.logger.Errorf(ctx, "从Gin的Context中获取从jwt解析出来的用户ID失败, 请检查路由是否使用jwt中间件")
+		h.Logger.Errorf(ctx, "从Gin的Context中获取从jwt解析出来的用户ID失败, 请检查路由是否使用jwt中间件")
 		return
 	}
-	return h.svcUser.GetByID(ctx, uid)
+	return h.SvcUser.GetByID(ctx, uid)
 }
 
 // IsLogin 当前是否已登录

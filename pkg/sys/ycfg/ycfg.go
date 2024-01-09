@@ -16,6 +16,8 @@ type Config struct {
 	shouldWatch   bool
 	unmarshalObj  any
 	onChangeFuncs []func()
+
+	redisStore *redisStore // redis配置存储支持
 }
 
 // RegisterOnChangeHandler 注册 onChange 回调处理

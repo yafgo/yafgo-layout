@@ -1,0 +1,105 @@
+package {{.PackageName}}
+
+import (
+	{{if ne .HandlerPkg "" -}}
+	"yafgo/yafgo-layout/internal/handler"
+
+	{{end -}}
+	"github.com/gin-gonic/gin"
+)
+
+type {{.CamelName}}Handler interface {
+	List(ctx *gin.Context)
+	Create(ctx *gin.Context)
+	Get(ctx *gin.Context)
+	Update(ctx *gin.Context)
+	Delete(ctx *gin.Context)
+}
+
+func New{{.CamelName}}Handler(
+	handler *{{.HandlerPkg}}Handler,
+) {{.CamelName}}Handler {
+	return &{{.LowerCamelName}}Handler{
+		Handler: handler,
+	}
+}
+
+type {{.LowerCamelName}}Handler struct {
+	*{{.HandlerPkg}}Handler
+}
+
+// List implements {{.CamelName}}Handler.
+//
+//	@Summary		{{.CamelName}} list
+//	@Description
+//	@Tags			API
+//	@Success		200	{object}	any	"{"code": 200, "data": [...]}"
+//	@Security		ApiToken
+//	@Router			/v1/{{.SnakeName}}/{{.SnakeNamePlural}} [get]
+func (h *{{.LowerCamelName}}Handler) List(ctx *gin.Context) {
+	h.Resp().Success(ctx, gin.H{
+		"data": "/api/",
+	})
+}
+
+// Get implements {{.CamelName}}Handler.
+//
+//	@Summary		{{.CamelName}} 查询单条
+//	@Description
+//	@Tags			API
+//	@Success		200	{object}	any	"{"code": 200, "data": [...]}"
+//	@Security		ApiToken
+//	@Router			/v1/{{.SnakeName}}/{{.SnakeNamePlural}}/{id} [get]
+func (h *{{.LowerCamelName}}Handler) Get(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	h.Resp().Success(ctx, gin.H{
+		"data": id,
+	})
+}
+
+// Create implements {{.CamelName}}Handler.
+//
+//	@Summary		{{.CamelName}} 新增
+//	@Description
+//	@Tags			API
+//	@Success		200	{object}	any	"{"code": 200, "data": [...]}"
+//	@Security		ApiToken
+//	@Router			/v1/{{.SnakeName}}/{{.SnakeNamePlural}} [post]
+func (h *{{.LowerCamelName}}Handler) Create(ctx *gin.Context) {
+	h.Resp().Success(ctx, gin.H{
+		"data": "/api/",
+	})
+}
+
+// Update implements {{.CamelName}}Handler.
+//
+//	@Summary		{{.CamelName}} 更新
+//	@Description
+//	@Tags			API
+//	@Success		200	{object}	any	"{"code": 200, "data": [...]}"
+//	@Security		ApiToken
+//	@Router			/v1/{{.SnakeName}}/{{.SnakeNamePlural}}/{id} [post]
+func (h *{{.LowerCamelName}}Handler) Update(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	h.Resp().Success(ctx, gin.H{
+		"data": id,
+	})
+}
+
+// Delete implements {{.CamelName}}Handler.
+//
+//	@Summary		{{.CamelName}} 删除
+//	@Description
+//	@Tags			API
+//	@Success		200	{object}	any	"{"code": 200, "data": [...]}"
+//	@Security		ApiToken
+//	@Router			/v1/{{.SnakeName}}/{{.SnakeNamePlural}}/{id} [delete]
+func (h *{{.LowerCamelName}}Handler) Delete(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	h.Resp().Success(ctx, gin.H{
+		"data": id,
+	})
+}

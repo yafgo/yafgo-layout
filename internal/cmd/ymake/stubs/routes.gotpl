@@ -1,0 +1,43 @@
+package {{.PackageName}}
+
+import (
+	{{if ne .HandlerPkg "" -}}
+	"yafgo/yafgo-layout/internal/handler"
+	{{end -}}
+	"yafgo/yafgo-layout/pkg/sys/ylog"
+
+	"github.com/gin-gonic/gin"
+)
+
+type Router struct {
+	logger *ylog.Logger
+
+	// handler
+	hdl *{{.HandlerPkg}}Handler
+	{{.LowerCamelName}}Handler {{.CamelName}}Handler
+}
+
+func NewRouter(
+	logger *ylog.Logger,
+	hdl *{{.HandlerPkg}}Handler,
+) *Router {
+	return &Router{
+		logger: logger,
+		hdl:    hdl,
+
+		// handler
+		{{.LowerCamelName}}Handler: New{{.CamelName}}Handler(hdl),
+	}
+}
+
+func (p *Router) Register(router *gin.Engine) {
+
+	rApi := router.Group("/api/{{.PackageName}}")
+
+	{
+		r := rApi.Group("/v1")
+
+		// {{.LowerCamelName}}
+		r.GET("/{{.SnakeName}}/{{.SnakeNamePlural}}", p.{{.LowerCamelName}}Handler.List)
+	}
+}

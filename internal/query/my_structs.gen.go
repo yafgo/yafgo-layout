@@ -17,14 +17,14 @@ import (
 
 	"gorm.io/plugin/dbresolver"
 
-	"yafgo/yafgo-layout/internal/gorm_gen"
+	"yafgo/yafgo-layout/internal/database"
 )
 
 func newMyStruct(db *gorm.DB, opts ...gen.DOOption) myStruct {
 	_myStruct := myStruct{}
 
 	_myStruct.myStructDo.UseDB(db, opts...)
-	_myStruct.myStructDo.UseModel(&gorm_gen.MyStruct{})
+	_myStruct.myStructDo.UseModel(&database.MyStruct{})
 
 	tableName := _myStruct.myStructDo.TableName()
 	_myStruct.ALL = field.NewAsterisk(tableName)
@@ -132,17 +132,17 @@ type IMyStructDo interface {
 	Count() (count int64, err error)
 	Scopes(funcs ...func(gen.Dao) gen.Dao) IMyStructDo
 	Unscoped() IMyStructDo
-	Create(values ...*gorm_gen.MyStruct) error
-	CreateInBatches(values []*gorm_gen.MyStruct, batchSize int) error
-	Save(values ...*gorm_gen.MyStruct) error
-	First() (*gorm_gen.MyStruct, error)
-	Take() (*gorm_gen.MyStruct, error)
-	Last() (*gorm_gen.MyStruct, error)
-	Find() ([]*gorm_gen.MyStruct, error)
-	FindInBatch(batchSize int, fc func(tx gen.Dao, batch int) error) (results []*gorm_gen.MyStruct, err error)
-	FindInBatches(result *[]*gorm_gen.MyStruct, batchSize int, fc func(tx gen.Dao, batch int) error) error
+	Create(values ...*database.MyStruct) error
+	CreateInBatches(values []*database.MyStruct, batchSize int) error
+	Save(values ...*database.MyStruct) error
+	First() (*database.MyStruct, error)
+	Take() (*database.MyStruct, error)
+	Last() (*database.MyStruct, error)
+	Find() ([]*database.MyStruct, error)
+	FindInBatch(batchSize int, fc func(tx gen.Dao, batch int) error) (results []*database.MyStruct, err error)
+	FindInBatches(result *[]*database.MyStruct, batchSize int, fc func(tx gen.Dao, batch int) error) error
 	Pluck(column field.Expr, dest interface{}) error
-	Delete(...*gorm_gen.MyStruct) (info gen.ResultInfo, err error)
+	Delete(...*database.MyStruct) (info gen.ResultInfo, err error)
 	Update(column field.Expr, value interface{}) (info gen.ResultInfo, err error)
 	UpdateSimple(columns ...field.AssignExpr) (info gen.ResultInfo, err error)
 	Updates(value interface{}) (info gen.ResultInfo, err error)
@@ -154,20 +154,20 @@ type IMyStructDo interface {
 	Assign(attrs ...field.AssignExpr) IMyStructDo
 	Joins(fields ...field.RelationField) IMyStructDo
 	Preload(fields ...field.RelationField) IMyStructDo
-	FirstOrInit() (*gorm_gen.MyStruct, error)
-	FirstOrCreate() (*gorm_gen.MyStruct, error)
-	FindByPage(offset int, limit int) (result []*gorm_gen.MyStruct, count int64, err error)
+	FirstOrInit() (*database.MyStruct, error)
+	FirstOrCreate() (*database.MyStruct, error)
+	FindByPage(offset int, limit int) (result []*database.MyStruct, count int64, err error)
 	ScanByPage(result interface{}, offset int, limit int) (count int64, err error)
 	Scan(result interface{}) (err error)
 	Returning(value interface{}, columns ...string) IMyStructDo
 	UnderlyingDB() *gorm.DB
 	schema.Tabler
 
-	GetByID(id int64) (result gorm_gen.MyStruct, err error)
+	GetByID(id int64) (result database.MyStruct, err error)
 }
 
 // where(id=@id)
-func (m myStructDo) GetByID(id int64) (result gorm_gen.MyStruct, err error) {
+func (m myStructDo) GetByID(id int64) (result database.MyStruct, err error) {
 	var params []interface{}
 
 	var generateSQL strings.Builder
@@ -277,57 +277,57 @@ func (m myStructDo) Unscoped() IMyStructDo {
 	return m.withDO(m.DO.Unscoped())
 }
 
-func (m myStructDo) Create(values ...*gorm_gen.MyStruct) error {
+func (m myStructDo) Create(values ...*database.MyStruct) error {
 	if len(values) == 0 {
 		return nil
 	}
 	return m.DO.Create(values)
 }
 
-func (m myStructDo) CreateInBatches(values []*gorm_gen.MyStruct, batchSize int) error {
+func (m myStructDo) CreateInBatches(values []*database.MyStruct, batchSize int) error {
 	return m.DO.CreateInBatches(values, batchSize)
 }
 
 // Save : !!! underlying implementation is different with GORM
 // The method is equivalent to executing the statement: db.Clauses(clause.OnConflict{UpdateAll: true}).Create(values)
-func (m myStructDo) Save(values ...*gorm_gen.MyStruct) error {
+func (m myStructDo) Save(values ...*database.MyStruct) error {
 	if len(values) == 0 {
 		return nil
 	}
 	return m.DO.Save(values)
 }
 
-func (m myStructDo) First() (*gorm_gen.MyStruct, error) {
+func (m myStructDo) First() (*database.MyStruct, error) {
 	if result, err := m.DO.First(); err != nil {
 		return nil, err
 	} else {
-		return result.(*gorm_gen.MyStruct), nil
+		return result.(*database.MyStruct), nil
 	}
 }
 
-func (m myStructDo) Take() (*gorm_gen.MyStruct, error) {
+func (m myStructDo) Take() (*database.MyStruct, error) {
 	if result, err := m.DO.Take(); err != nil {
 		return nil, err
 	} else {
-		return result.(*gorm_gen.MyStruct), nil
+		return result.(*database.MyStruct), nil
 	}
 }
 
-func (m myStructDo) Last() (*gorm_gen.MyStruct, error) {
+func (m myStructDo) Last() (*database.MyStruct, error) {
 	if result, err := m.DO.Last(); err != nil {
 		return nil, err
 	} else {
-		return result.(*gorm_gen.MyStruct), nil
+		return result.(*database.MyStruct), nil
 	}
 }
 
-func (m myStructDo) Find() ([]*gorm_gen.MyStruct, error) {
+func (m myStructDo) Find() ([]*database.MyStruct, error) {
 	result, err := m.DO.Find()
-	return result.([]*gorm_gen.MyStruct), err
+	return result.([]*database.MyStruct), err
 }
 
-func (m myStructDo) FindInBatch(batchSize int, fc func(tx gen.Dao, batch int) error) (results []*gorm_gen.MyStruct, err error) {
-	buf := make([]*gorm_gen.MyStruct, 0, batchSize)
+func (m myStructDo) FindInBatch(batchSize int, fc func(tx gen.Dao, batch int) error) (results []*database.MyStruct, err error) {
+	buf := make([]*database.MyStruct, 0, batchSize)
 	err = m.DO.FindInBatches(&buf, batchSize, func(tx gen.Dao, batch int) error {
 		defer func() { results = append(results, buf...) }()
 		return fc(tx, batch)
@@ -335,7 +335,7 @@ func (m myStructDo) FindInBatch(batchSize int, fc func(tx gen.Dao, batch int) er
 	return results, err
 }
 
-func (m myStructDo) FindInBatches(result *[]*gorm_gen.MyStruct, batchSize int, fc func(tx gen.Dao, batch int) error) error {
+func (m myStructDo) FindInBatches(result *[]*database.MyStruct, batchSize int, fc func(tx gen.Dao, batch int) error) error {
 	return m.DO.FindInBatches(result, batchSize, fc)
 }
 
@@ -361,23 +361,23 @@ func (m myStructDo) Preload(fields ...field.RelationField) IMyStructDo {
 	return &m
 }
 
-func (m myStructDo) FirstOrInit() (*gorm_gen.MyStruct, error) {
+func (m myStructDo) FirstOrInit() (*database.MyStruct, error) {
 	if result, err := m.DO.FirstOrInit(); err != nil {
 		return nil, err
 	} else {
-		return result.(*gorm_gen.MyStruct), nil
+		return result.(*database.MyStruct), nil
 	}
 }
 
-func (m myStructDo) FirstOrCreate() (*gorm_gen.MyStruct, error) {
+func (m myStructDo) FirstOrCreate() (*database.MyStruct, error) {
 	if result, err := m.DO.FirstOrCreate(); err != nil {
 		return nil, err
 	} else {
-		return result.(*gorm_gen.MyStruct), nil
+		return result.(*database.MyStruct), nil
 	}
 }
 
-func (m myStructDo) FindByPage(offset int, limit int) (result []*gorm_gen.MyStruct, count int64, err error) {
+func (m myStructDo) FindByPage(offset int, limit int) (result []*database.MyStruct, count int64, err error) {
 	result, err = m.Offset(offset).Limit(limit).Find()
 	if err != nil {
 		return
@@ -406,7 +406,7 @@ func (m myStructDo) Scan(result interface{}) (err error) {
 	return m.DO.Scan(result)
 }
 
-func (m myStructDo) Delete(models ...*gorm_gen.MyStruct) (result gen.ResultInfo, err error) {
+func (m myStructDo) Delete(models ...*database.MyStruct) (result gen.ResultInfo, err error) {
 	return m.DO.Delete(models)
 }
 

@@ -1,0 +1,27 @@
+package service
+
+import (
+	"context"
+
+	"github.com/pkg/errors"
+)
+
+type {{.CamelName}}Service interface {
+	GetByID(ctx context.Context, id int64) error
+}
+
+func New{{.CamelName}}Service(service *Service) {{.CamelName}}Service {
+	return &{{.LowerCamelName}}Service{
+		Service: service,
+	}
+}
+
+type {{.LowerCamelName}}Service struct {
+	*Service
+}
+
+// GetByID implements {{.CamelName}}Service.
+func (s *{{.LowerCamelName}}Service) GetByID(ctx context.Context, id int64) error {
+	// todo
+	return errors.New("todo")
+}

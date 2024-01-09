@@ -174,7 +174,29 @@ const docTemplate = `{
             "name": "Authorization",
             "in": "header"
         }
-    }
+    },
+    "tags": [
+        {
+            "description": "未分组接口",
+            "name": "API"
+        },
+        {
+            "description": "登录相关接口",
+            "name": "Auth"
+        },
+        {
+            "description": "设备租赁相关",
+            "name": "设备租赁"
+        },
+        {
+            "description": "“我的”相关接口",
+            "name": "我的"
+        },
+        {
+            "description": "后台管理相关接口",
+            "name": "后台"
+        }
+    ]
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
