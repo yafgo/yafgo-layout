@@ -15,4 +15,4 @@ services:
     volumes:
       - "./storage:/app/storage"
     tty: true
-    command: ["-m=dev"]
+    command: ["-c=dev"]

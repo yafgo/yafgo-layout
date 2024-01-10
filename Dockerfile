@@ -1,5 +1,5 @@
 # build
-FROM golang:1.20-alpine AS builder
+FROM golang:1.21-alpine AS builder
 
 LABEL stage=gobuilder
 
@@ -10,11 +10,10 @@ RUN apk update --no-cache && apk add --no-cache tzdata
 
 WORKDIR /build
 
-ADD go.mod .
-ADD go.sum .
+ADD go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN go build -ldflags "-s -w" -o /app/app .
+RUN go build -ldflags "-s -w" -o /app/app ./cmd/server/main.go
 
 # release
 FROM alpine:3.16
@@ -30,5 +29,5 @@ COPY --from=builder /app/app /app/yafgo
 COPY --from=builder /build/resource /app/resource
 COPY --from=builder /build/config /app/config
 
-ENTRYPOINT [ "/app/yafgo", "-m=prod" ]
-# CMD ["-m=dev"]
+ENTRYPOINT [ "/app/yafgo", "-c=prod" ]
+# CMD ["-c=dev"]
