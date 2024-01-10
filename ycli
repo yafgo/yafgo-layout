@@ -16,15 +16,15 @@ C_SKY='\033[36m'
 
 # 使用说明，用来提示输入参数
 usage() {
-    echo -e "${C_PURPLE}YCli${NC}"
+    echo -e "${C_PURPLE}[Yafgo-Cli] v1.0.0${NC}\n"
     echo -e "${C_BLUE}Usage:${NC}\n ${C_GREEN}./ycli${NC} [command]\n"
     echo -e "${C_BLUE}Available Commands:${NC}"
     echo -e " ${C_GREEN} make     ${NC} 代码生成"
     echo -e " ${C_GREEN} play     ${NC} 代码演练"
     echo -e " ${C_GREEN} orm      ${NC} 生成gorm代码"
-    echo -e " ${C_GREEN} serve    ${NC} 启动webServer"
     echo -e " ${C_GREEN} migrate  ${NC} 执行db迁移"
     echo -e " ${C_GREEN} doc      ${NC} 更新swagger文档"
+    echo -e " ${C_GREEN} serve    ${NC} 启动webServer"
     echo
 }
 

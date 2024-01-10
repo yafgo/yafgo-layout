@@ -6,7 +6,7 @@ services:
   yafgo:
     build:
       context: .
-      dockerfile: ./docker/dev/Dockerfile
+      dockerfile: ./Dockerfile.dev
     image: yafgo_dev:latest
     container_name: yafgo_dev
     ports:
