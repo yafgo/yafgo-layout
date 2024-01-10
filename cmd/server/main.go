@@ -22,10 +22,6 @@ import "yafgo/yafgo-layout/internal/cmd/yserve"
 //	@tag.description			未分组接口
 //	@tag.name					Auth
 //	@tag.description			登录相关接口
-//	@tag.name					设备租赁
-//	@tag.description			设备租赁相关
-//	@tag.name					我的
-//	@tag.description			“我的”相关接口
 //	@tag.name					后台
 //	@tag.description			后台管理相关接口
 //

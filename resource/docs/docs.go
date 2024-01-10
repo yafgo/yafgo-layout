@@ -185,14 +185,6 @@ const docTemplate = `{
             "name": "Auth"
         },
         {
-            "description": "设备租赁相关",
-            "name": "设备租赁"
-        },
-        {
-            "description": "“我的”相关接口",
-            "name": "我的"
-        },
-        {
             "description": "后台管理相关接口",
             "name": "后台"
         }
