@@ -21,7 +21,7 @@ func NewMigrateCmd(cfg *ycfg.Config) *cobra.Command {
 		Short: "Database migration management",
 		Args:  cobra.NoArgs,
 	}
-	cmdMigration.Run = cmdMigrate.Run
+	// cmdMigration.Run = cmdMigrate.Run
 	cmdMigration.AddCommand(
 		m.CmdMake(),            // migrate make <migration_name>
 		cmdMigrate,             // migrate migrate
