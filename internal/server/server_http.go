@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
-	"time"
 	"yafgo/yafgo-layout/internal/middleware"
 	httppkg "yafgo/yafgo-layout/pkg/http"
 
@@ -37,27 +37,36 @@ func (s *WebService) CmdRun(cmd *cobra.Command, args []string) {
 		cancel()
 	}()
 
-	s.RunWebServer(ctx)
+	var wg sync.WaitGroup
+
+	// web服务
+	s.RunWebServer(ctx, &wg)
 
 	// 等待退出
 	<-ctx.Done()
-	// 缓冲几秒等待任务结束
+	// 等待所有任务结束
 	log.Println(cDebug("exiting..."))
-	time.Sleep(time.Second * 2)
+	wg.Wait()
 	log.Println(cInfo("exit"))
 }
 
 // RunWebServer 启动 web server
-func (s *WebService) RunWebServer(ctx context.Context) {
+func (s *WebService) RunWebServer(ctx context.Context, wg *sync.WaitGroup) {
 	isProd := s.g.IsProd()
 	port := s.cfg.GetInt("http.port")
 	addr := fmt.Sprintf(":%d", port)
 
-	httppkg.NewServerHttp().
+	serverExit := httppkg.NewServerHttp().
 		SetAddr(addr).
 		Run(ctx, func() http.Handler {
 			return s.NewGinEngine(isProd)
 		})
+
+	wg.Add(1)
+	go func() {
+		<-serverExit
+		wg.Done()
+	}()
 }
 
 // NewGinEngine

@@ -6,13 +6,14 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"time"
 
 	"github.com/gookit/color"
 )
 
 type httpServer struct {
 	addr string
+
+	done context.CancelFunc
 }
 
 func NewServerHttp() *httpServer {
@@ -27,8 +28,13 @@ func (hs *httpServer) SetAddr(addr string) *httpServer {
 	return hs
 }
 
-func (hs *httpServer) Run(ctx context.Context, hdlFunc func() http.Handler) {
+func (hs *httpServer) Run(ctx context.Context, hdlFunc func() http.Handler) (done <-chan struct{}) {
+	doneCtx, doneCancle := context.WithCancel(context.Background())
+	done = doneCtx.Done()
+	hs.done = doneCancle
+
 	go hs.run(ctx, hdlFunc)
+	return
 }
 
 func (hs *httpServer) run(ctx context.Context, hdlFUnc func() http.Handler) {
@@ -59,12 +65,11 @@ func (hs *httpServer) run(ctx context.Context, hdlFUnc func() http.Handler) {
 	// 接收外部 ctx cancel 通知
 	<-ctx.Done()
 	log.Println(cDebug("Server Shutdown ..."))
-	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
-	defer cancel()
-	if err := srv.Shutdown(ctx); err != nil {
+	if err := srv.Shutdown(context.Background()); err != nil {
 		log.Fatalf("Server Shutdown Err: %+v", err)
 	}
 	log.Println(cInfo("Server Exited"))
+	hs.done()
 }
 
 var cDebug = color.Debug.Render

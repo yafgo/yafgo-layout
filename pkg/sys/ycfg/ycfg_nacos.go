@@ -28,7 +28,7 @@ nacos:
 func (p *Config) setupNacos() (err error) {
 	nacosCfgKey := "nacos.config"
 	if !p.IsSet("nacos") || !p.IsSet(nacosCfgKey) {
-		color.Warnln("nacos配置不存在, 不启用nacos配置功能")
+		// color.Warnln("nacos配置不存在, 不启用nacos配置功能")
 		return
 	}
 
