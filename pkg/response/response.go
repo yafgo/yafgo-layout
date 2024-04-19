@@ -58,7 +58,9 @@ func (p *ApiResponse) Error(ctx *gin.Context, err ...error) {
 
 func (p *ApiResponse) ErrorWithMsg(ctx *gin.Context, msg string, err ...error) {
 	p.beforeOutput(ctx)
-	p.resp.Msg = msg
+	if p.resp.Msg == "" {
+		p.resp.Msg = msg
+	}
 	if len(err) > 0 && err[0] != nil {
 		p.resp.ErrData = err[0].Error()
 	}

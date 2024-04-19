@@ -34,9 +34,9 @@ func RunGenerate(dsn string) {
 }
 
 // fieldsIgnore 通用忽略字段
-var fieldsIgnore = []string{"iEdit", "iSourceType", "iSourceID"}
+var fieldsIgnore = []string{"field1", "field2", "field3"}
 
 type querierGetByID interface {
 	// where(id=@id)
-	GetByID(id int64) (gen.T, error)
+	GetByID(id int64) (*gen.T, error)
 }
