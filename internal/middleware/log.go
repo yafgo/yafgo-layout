@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strings"
 	"time"
 	"yafgo/yafgo-layout/pkg/hash"
 	"yafgo/yafgo-layout/pkg/sys/ylog"
@@ -30,8 +31,16 @@ func Logger() gin.HandlerFunc {
 			ylog.Any("ua", ctx.Request.UserAgent()),
 			ylog.Any("header", headers),
 		}
+
+		// 是否记录请求body
+		var logReqBody = true
+		// 文件上传类的接口, 日志不记录body
+		if contentType := ctx.Request.Header.Get("content-type"); strings.HasPrefix(contentType, "multipart/form-data") {
+			logReqBody = false
+		}
+
 		var reqBody []byte
-		if ctx.Request.Body != nil {
+		if logReqBody && ctx.Request.Body != nil {
 			// ctx.Request.Body 是一个 buffer 对象，只能读取一次
 			reqBody, _ = ctx.GetRawData()
 			// [重要] 读取后，重新赋值 ctx.Request.Body ，以供后续的其他操作
