@@ -17,6 +17,34 @@
 
 ## 开始使用
 
+### 环境要求
+
+- `git`
+- `go` _1.21+_
+- `mysql` _5.7+_
+- `redis` _6.0+_
+
+### 创建项目
+
+```shell
+# 安装
+go install github.com/yafgo/yafgo@latest
+
+# 创建新项目
+yafgo
+
+# 示例
+✔ Project Name: my_project
+Use the arrow keys to navigate: ↓ ↑ → ←
+Select Template?
+  🌶 [Yafgo]    (Yafgo 后端项目模板)
+     [YafgoWeb] (Yafgo 前后端项目模板)
+
+# 从模板列表选择一个模板即可
+```
+
+### 运行项目
+
 ```shell
 > ./ycli
 [Yafgo-Cli] v1.0.0
