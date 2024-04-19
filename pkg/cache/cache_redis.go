@@ -21,9 +21,9 @@ func NewRedis(addr string, password string, database int, prefix string) (*store
 		DB:       database,
 	})
 
-	if _, err := client.Ping(context.Background()).Result(); err != nil {
+	/* if _, err := client.Ping(context.Background()).Result(); err != nil {
 		return nil, errors.WithMessage(err, "init connection error")
-	}
+	} */
 
 	return &storeRedis{
 		prefix: prefix,

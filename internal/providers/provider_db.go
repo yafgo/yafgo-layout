@@ -1,8 +1,6 @@
 package providers
 
 import (
-	"context"
-	"time"
 	"yafgo/yafgo-layout/internal/query"
 	"yafgo/yafgo-layout/pkg/cache"
 	"yafgo/yafgo-layout/pkg/database"
@@ -40,13 +38,13 @@ func NewRedis(cfg *ycfg.Config) *redis.Client {
 		DB:       subCfg.GetInt("db"),
 	})
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	/* ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	_, err := rdb.Ping(ctx).Result()
 	if err != nil {
 		panic("redis error: " + err.Error())
-	}
+	} */
 	return rdb
 }
 
