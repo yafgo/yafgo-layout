@@ -14,7 +14,7 @@ func (s *WebService) registerRoutes(router *gin.Engine) {
 
 	// 静态文件
 	router.StaticFile("/favicon.ico", "resource/public/favicon.ico")
-	router.Static("/static", "public/static/")
+	router.Static("/static", "resource/public/static/")
 
 	// 前台路由
 	s.routerFrontend.Register(router)

@@ -1,0 +1,42 @@
+{{ define "layout.tmpl" -}}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{.appName}}</title>
+  <link rel="stylesheet" href="{{.StaticDir}}/example/example.css?t={{.StaticHash}}" />
+  <style>
+    /* 页面内样式 */
+    h1.title {
+      color: red;
+      text-align: center;
+    }
+
+    h2 {
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <h1 class="title">{{.appName}}</h1>
+    <h2>Hello {{.appName}}</h2>
+  </div>
+
+  <script src="{{.StaticDir}}/example/example.js?t={{.StaticHash}}"></script>
+  {{- if .IsDev -}}
+  <!-- 在开发环境可用 -->
+  <script>console.log('仅dev环境可见')</script>
+  {{- end -}}
+  <script>
+    console.log('我是页面内的js代码')
+  </script>
+
+</body>
+
+</html>
+{{- end -}}
