@@ -103,7 +103,6 @@ func (p *Config) setupNacos() (err error) {
 				color.Errorf("读取nacos配置出错: %+v\n", _err)
 				return
 			}
-			p.EmitChange()
 		},
 	})
 	if err != nil {
