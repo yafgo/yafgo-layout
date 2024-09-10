@@ -41,7 +41,7 @@ orm() {
 }
 
 serve() {
-    go run cmd/server/main.go $@
+    go run cmd/serve/main.go $@
 }
 
 migrate() {
