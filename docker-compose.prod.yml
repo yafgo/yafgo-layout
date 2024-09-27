@@ -1,4 +1,3 @@
-version: "3"
 name: "yafgo_prod"
 
 # 用于在本地测试prod构建
