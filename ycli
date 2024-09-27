@@ -51,8 +51,8 @@ migrate() {
 doc() {
     # 需要先全局安装swaggo
     # go install github.com/swaggo/swag/cmd/swag@latest
-    swag fmt --generalInfo ./cmd/server/main.go --dir ./
-    swag init --generalInfo ./cmd/server/main.go --dir ./ --parseInternal --parseDepth=10 -o ./resource/docs -ot "go,json"
+    swag fmt --generalInfo ./cmd/serve/main.go --dir ./
+    swag init --generalInfo ./cmd/serve/main.go --dir ./ --parseInternal --parseDepth=10 -o ./resource/docs -ot "go,json"
 }
 
 ###############################################################################
